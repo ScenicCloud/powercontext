@@ -15,6 +15,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 from pathlib import Path
 from subprocess import CompletedProcess
 
@@ -26,7 +27,7 @@ from powercontext.cli.app import create_cli
 from powercontext.cli.system import doctor_app, setup_app
 
 
-def _write_plugin(root: Path) -> Path:
+def _write_plugin(root: Path, *, guidance: bool = True) -> Path:
     plugins_root = root / "integrations" / "hermes" / "plugins"
     plugin = plugins_root / "powercontext"
     command_plugin = plugins_root / "powercontext-command"
@@ -39,6 +40,10 @@ def _write_plugin(root: Path) -> Path:
         "name: powercontext-command\nkind: standalone\n",
         encoding="utf-8",
     )
+    if guidance:
+        shutil.copytree(
+            Path(__file__).parents[1] / "integrations/hermes/plugins/powercontext/skills", plugin / "skills"
+        )
     return plugin
 
 
@@ -95,6 +100,7 @@ def test_setup_hermes_copies_provider_from_a_local_checkout(
         "hermes_home": str(hermes_home),
         "data_dir": str(tmp_path / "data"),
         "command_plugin_path": str(hermes_home / "plugins" / "powercontext-command"),
+        "skill_path": str(hermes_home / "skills/powercontext-project-context"),
     }
     assert (hermes_home / "plugins" / "powercontext" / "plugin.yaml").is_file()
     assert (hermes_home / "plugins" / "powercontext-command" / "plugin.yaml").is_file()
@@ -106,7 +112,7 @@ def test_setup_hermes_refuses_package_omitting_installed_guidance(
     tmp_path: Path, monkeypatch, installed_agent_checks, hermes_activation
 ) -> None:
     checkout = tmp_path / "powercontext"
-    _write_plugin(checkout)
+    _write_plugin(checkout, guidance=False)
     home = tmp_path / "hermes"
     installed = _write_installed_plugins(home)
     guidance = installed / "skills/powercontext-project-context/SKILL.md"
