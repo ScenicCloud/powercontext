@@ -209,6 +209,36 @@ class ArtifactProcessingIntentRepository:
             or 0
         )
 
+    async def admit_counted(
+        self,
+        connection: AsyncConnection,
+        scope_id: str,
+        binding_name: str,
+        /,
+    ) -> StoredArtifactProcessingIntent:
+        """Accept one pending Scope whose durable dirty work is still unconsumed.
+
+        Count admission has no frozen automatic scan, so it relies on the
+        requested/handled generations instead: a Scope with an outstanding
+        accepted invocation keeps that generation until its Window completes.
+        """
+
+        current = await self.load(connection, scope_id, binding_name, for_update=True)
+        if current is None:
+            raise InvalidRepositoryArgumentError("scope_id", "counted member is not registered")
+        if (
+            current.dirty_generation > current.clean_generation
+            and current.requested_generation == current.handled_generation
+        ):
+            table = ARTIFACT_PROCESSING_INTENTS_TABLE
+            await connection.execute(
+                update(table)
+                .where(table.c.scope_id == scope_id, table.c.binding_name == binding_name)
+                .values(requested_generation=current.requested_generation + 1)
+            )
+            return cast(StoredArtifactProcessingIntent, await self.load(connection, scope_id, binding_name))
+        return current
+
     async def admit(
         self,
         connection: AsyncConnection,

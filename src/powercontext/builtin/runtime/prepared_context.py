@@ -17,6 +17,7 @@
 from __future__ import annotations
 
 import json
+import re
 from collections.abc import Sequence
 from dataclasses import dataclass, replace
 from itertools import chain
@@ -106,6 +107,7 @@ class PreparedContextBuild:
     origins: tuple[PreparedContextOrigin, ...]
     omissions: PreparedContextOmissions = PreparedContextOmissions()
     code_origins: tuple[CodeEvidenceRef, ...] = ()
+    fragments: tuple[PreparedContextFragment, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -115,6 +117,16 @@ class MemoryEntryAddress:
     memory: ArtifactAddress
     entry_id: str
     entry_version_id: str
+
+
+@dataclass(frozen=True)
+class PreparedContextFragment:
+    """One literal Memory entry span selected for a query."""
+
+    address: MemoryEntryAddress
+    start: int
+    end: int
+    text: str
 
 
 PreparedContextOrigin = MemoryCitation | ArtifactRef | MemoryEntryAddress | ArtifactAddress
@@ -235,7 +247,7 @@ class PreparedContextBuilder:
         if sum(len(candidates.hits) for candidates in experience_candidates) > self.experience_candidate_limit:
             raise PreparedContextInvariantError("experience-candidate-limit")
 
-        content, origins, omissions = self._select_entries(
+        content, origins, omissions, fragments = self._select_entries(
             request=request,
             current_scope_id=current_scope_id,
             memory_candidates=memory_candidates,
@@ -254,6 +266,7 @@ class PreparedContextBuilder:
             context=PreparedContext(status="ready", content=content, content_bytes=content_bytes),
             origins=origins,
             omissions=omissions,
+            fragments=fragments,
         )
 
     def probe_budget(
@@ -277,7 +290,7 @@ class PreparedContextBuilder:
         counters because both go through :meth:`_select_entries`.
         """
 
-        content, origins, omissions = self._select_entries(
+        content, origins, omissions, _ = self._select_entries(
             request=request,
             current_scope_id=current_scope_id,
             memory_candidates=memory_candidates,
@@ -303,17 +316,24 @@ class PreparedContextBuilder:
         topic_memory_hits: Sequence[TopicMemorySearchHit],
         experience_candidates: Sequence[PreparedExperienceCandidates],
         profile_candidates: Sequence[PreparedProfileCandidate],
-    ) -> tuple[str | None, tuple[PreparedContextOrigin, ...], PreparedContextOmissions]:
+    ) -> tuple[str | None, tuple[PreparedContextOrigin, ...], PreparedContextOmissions, tuple[PreparedContextFragment, ...]]:
         """Run one complete pure selection pass and render it.
 
-        Returns ``(content, origins, omissions)``; ``content`` is ``None`` exactly when nothing
-        was selected, which is the empty-result case for both paths. This is the single
+        Returns ``(content, origins, omissions, fragments)``; ``content`` is ``None`` exactly when
+        nothing was selected, which is the empty-result case for both paths. This is the single
         selection path shared by :meth:`build_scopes_result` and :meth:`probe_budget`, so the
         probe's counters always describe the selection the build would actually perform.
         """
 
+        if request.evidence_selection and request.assembly is None:
+            return self._select_evidence(
+                request,
+                current_scope_id=current_scope_id,
+                memory_candidates=memory_candidates,
+            )
+
         if request.assembly is not None:
-            return self._select_text(
+            content, origins, omissions = self._select_text(
                 request,
                 current_scope_id=current_scope_id,
                 memory_candidates=memory_candidates,
@@ -321,6 +341,7 @@ class PreparedContextBuilder:
                 profile_candidates=profile_candidates,
                 topic_memory_hits=topic_memory_hits,
             )
+            return content, origins, omissions, ()
 
         memory_entries = _interleave_groups(
             tuple(
@@ -344,8 +365,97 @@ class PreparedContextBuilder:
         )[: self.experience_entry_limit]
         entries, omissions = self._fit_entries(request, memory_entries, topic_memory_entries, experience_entries)
         if not entries:
-            return None, (), omissions
-        return _render(entries), tuple(entry.origin for entry in entries), omissions
+            return None, (), omissions, ()
+        return _render(entries), tuple(entry.origin for entry in entries), omissions, ()
+
+    def _select_evidence(
+        self,
+        request: PrepareContextRequest,
+        *,
+        current_scope_id: str | None,
+        memory_candidates: Sequence[PreparedMemoryCandidates],
+    ) -> tuple[str | None, tuple[PreparedContextOrigin, ...], PreparedContextOmissions, tuple[PreparedContextFragment, ...]]:
+        """Select literal query-relevant spans from Memory candidates within one byte budget."""
+
+        query_terms = _evidence_terms(request.query)
+        units: list[_EvidenceUnit] = []
+        texts: dict[tuple[int, int], str] = {}
+        for group_index, candidates in enumerate(memory_candidates):
+            scope_id = candidates.scope_id or current_scope_id or ""
+            seen: set[tuple[str, str]] = set()
+            for entry_index, hit in enumerate(candidates.hits):
+                if hit.memory_ref != candidates.memory_ref:
+                    raise PreparedContextInvariantError("memory-ref-mismatch")
+                identity = (hit.entry_id, hit.entry_version_id)
+                if identity in seen:
+                    continue
+                seen.add(identity)
+                if not hit.entry_id.strip() or not hit.entry_version_id.strip() or not hit.text.strip():
+                    continue
+                key = (group_index, entry_index)
+                texts[key] = hit.text
+                address = MemoryEntryAddress(
+                    memory=ArtifactAddress(scope_id=scope_id, artifact=hit.memory_ref),
+                    entry_id=hit.entry_id,
+                    entry_version_id=hit.entry_version_id,
+                )
+                for unit_index, (start, end) in enumerate(_sentence_spans(hit.text)):
+                    units.append(
+                        _EvidenceUnit(
+                            group=group_index,
+                            entry_index=entry_index,
+                            unit_index=unit_index,
+                            address=address,
+                            start=start,
+                            end=end,
+                            matched=len(query_terms.intersection(_evidence_terms(hit.text[start:end]))),
+                        )
+                    )
+        if not units:
+            return None, (), PreparedContextOmissions(), ()
+
+        ordered = sorted(
+            units,
+            key=lambda unit: (-unit.matched, unit.end - unit.start, unit.group, unit.entry_index, unit.unit_index),
+        )
+        ranks = {(unit.group, unit.entry_index, unit.unit_index): rank for rank, unit in enumerate(ordered)}
+        by_index = {(unit.group, unit.entry_index, unit.unit_index): unit for unit in units}
+        selected: list[_EvidenceUnit] = []
+        dropped = 0
+        for unit in ordered:
+            if not unit.matched:
+                break
+            if _evidence_fits((*selected, unit), texts, ranks, request.max_bytes):
+                selected.append(unit)
+                continue
+            trimmed = _trim_evidence(unit, texts, selected, ranks, request.max_bytes)
+            if trimmed is None:
+                dropped += 1
+            else:
+                selected.append(trimmed)
+        if selected:
+            adjacent: list[_EvidenceUnit] = []
+            for unit in selected:
+                for offset in (-1, 1):
+                    neighbour = by_index.get((unit.group, unit.entry_index, unit.unit_index + offset))
+                    if neighbour is not None and neighbour not in selected and neighbour not in adjacent:
+                        adjacent.append(neighbour)
+            for unit in adjacent:
+                if _evidence_fits((*selected, unit), texts, ranks, request.max_bytes):
+                    selected.append(unit)
+                else:
+                    dropped += 1
+        if not selected and units:
+            fallback = min(units, key=lambda unit: (unit.group, unit.entry_index, unit.unit_index))
+            selected = [trimmed] if (trimmed := _trim_evidence(fallback, texts, (), ranks, request.max_bytes)) else []
+        if not selected:
+            return None, (), PreparedContextOmissions(dropped_items=dropped), ()
+
+        fragments = _evidence_fragments(selected, texts, ranks)
+        content = _render_evidence(fragments)
+        if len(content.encode("utf-8")) > request.max_bytes:
+            raise PreparedContextInvariantError("output-budget")
+        return content, tuple(fragment.address for fragment in fragments), PreparedContextOmissions(dropped_items=dropped), fragments
 
     def _select_text(
         self,
@@ -728,3 +838,164 @@ def _truncate_utf8(text: str, byte_budget: int) -> str:
     prefix_budget = byte_budget - len(_ELLIPSIS.encode("utf-8"))
     encoded_prefix = text.encode("utf-8")[:prefix_budget]
     return f"{encoded_prefix.decode('utf-8', errors='ignore')}{_ELLIPSIS}"
+
+
+@dataclass(frozen=True)
+class _EvidenceUnit:
+    """One literal sentence-level span of one Memory entry."""
+
+    group: int
+    entry_index: int
+    unit_index: int
+    address: MemoryEntryAddress
+    start: int
+    end: int
+    matched: int
+
+
+_TERM_PATTERN = re.compile(r"[^\W_]+")
+_MIN_EVIDENCE_CHARS = 24
+_MAX_EVIDENCE_SENTENCE_CHARS = 800
+
+
+def _evidence_terms(text: str) -> set[str]:
+    return {match.group().casefold() for match in _TERM_PATTERN.finditer(text)}
+
+
+def _trim_span(text: str, start: int, end: int) -> tuple[int, int] | None:
+    while start < end and text[start].isspace():
+        start += 1
+    while end > start and text[end - 1].isspace():
+        end -= 1
+    return (start, end) if start < end else None
+
+
+def _split_span(text: str, start: int, end: int) -> list[tuple[int, int]]:
+    if end - start <= _MAX_EVIDENCE_SENTENCE_CHARS:
+        return [(start, end)]
+    spans: list[tuple[int, int]] = []
+    cursor = start
+    while end - cursor > _MAX_EVIDENCE_SENTENCE_CHARS:
+        limit = cursor + _MAX_EVIDENCE_SENTENCE_CHARS
+        split = limit
+        while split > cursor and not text[split - 1].isspace():
+            split -= 1
+        if split <= cursor:
+            split = limit
+        spans.append((cursor, split))
+        cursor = split
+        while cursor < end and text[cursor].isspace():
+            cursor += 1
+    if cursor < end:
+        spans.append((cursor, end))
+    return spans
+
+
+def _sentence_spans(text: str) -> tuple[tuple[int, int], ...]:
+    """Split literal text into sentence spans that keep their original character offsets."""
+
+    spans: list[tuple[int, int]] = []
+    length = len(text)
+    start = 0
+    index = 0
+    while index < length:
+        if text[index] in ".!?\n":
+            end = index + 1
+            while end < length and text[end] in "\"'”’)]}":
+                end += 1
+            if end < length and not text[end].isspace():
+                index += 1
+                continue
+            span = _trim_span(text, start, end)
+            if span is not None:
+                spans.extend(_split_span(text, *span))
+            while end < length and text[end].isspace():
+                end += 1
+            start = index = end
+            continue
+        index += 1
+    span = _trim_span(text, start, length)
+    if span is not None:
+        spans.extend(_split_span(text, *span))
+    return tuple(spans)
+
+
+def _evidence_fragments(
+    units: Sequence[_EvidenceUnit],
+    texts: dict[tuple[int, int], str],
+    ranks: dict[tuple[int, int, int], int],
+) -> tuple[PreparedContextFragment, ...]:
+    grouped: dict[tuple[int, int], list[_EvidenceUnit]] = {}
+    for unit in units:
+        grouped.setdefault((unit.group, unit.entry_index), []).append(unit)
+    ranked: list[tuple[int, PreparedContextFragment]] = []
+    for key, group_units in grouped.items():
+        merged: list[tuple[int, int, int, _EvidenceUnit]] = []
+        for unit in sorted(group_units, key=lambda unit: unit.start):
+            rank = ranks[(unit.group, unit.entry_index, unit.unit_index)]
+            if merged and unit.start <= merged[-1][1]:
+                begin, finish, best_rank, first = merged[-1]
+                merged[-1] = (begin, max(finish, unit.end), min(best_rank, rank), first)
+            else:
+                merged.append((unit.start, unit.end, rank, unit))
+        for begin, finish, rank, unit in merged:
+            ranked.append(
+                (
+                    rank,
+                    PreparedContextFragment(address=unit.address, start=begin, end=finish, text=texts[key][begin:finish]),
+                )
+            )
+    ranked.sort(key=lambda pair: pair[0])
+    return tuple(fragment for _, fragment in ranked)
+
+
+def _render_evidence(fragments: Sequence[PreparedContextFragment]) -> str:
+    items = [
+        {
+            "citation": {
+                "scope_id": fragment.address.memory.scope_id,
+                "memory_ref": fragment.address.memory.artifact.model_dump(mode="json"),
+                "entry_id": fragment.address.entry_id,
+                "entry_version_id": fragment.address.entry_version_id,
+            },
+            "content": fragment.text,
+            "start": fragment.start,
+            "end": fragment.end,
+        }
+        for fragment in fragments
+    ]
+    envelope = {"trust": "untrusted_history", "items": items}
+    encoded = json.dumps(envelope, ensure_ascii=False, separators=(",", ":"))
+    return "\n\n".join((TRUST_POLICY, f"{_BEGIN_MARKER}\n{encoded}\n{_END_MARKER}"))
+
+
+def _evidence_fits(
+    units: Sequence[_EvidenceUnit],
+    texts: dict[tuple[int, int], str],
+    ranks: dict[tuple[int, int, int], int],
+    max_bytes: int,
+) -> bool:
+    return len(_render_evidence(_evidence_fragments(units, texts, ranks)).encode("utf-8")) <= max_bytes
+
+
+def _trim_evidence(
+    unit: _EvidenceUnit,
+    texts: dict[tuple[int, int], str],
+    selected: Sequence[_EvidenceUnit],
+    ranks: dict[tuple[int, int, int], int],
+    max_bytes: int,
+) -> _EvidenceUnit | None:
+    """Shorten one span to the longest literal prefix that still fits the byte budget."""
+
+    low = min(unit.end, unit.start + _MIN_EVIDENCE_CHARS)
+    high = unit.end - 1
+    best: _EvidenceUnit | None = None
+    while low <= high:
+        middle = (low + high) // 2
+        candidate = replace(unit, end=middle)
+        if _evidence_fits((*selected, candidate), texts, ranks, max_bytes):
+            best = candidate
+            low = middle + 1
+        else:
+            high = middle - 1
+    return best

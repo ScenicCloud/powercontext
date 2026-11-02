@@ -56,7 +56,10 @@ from powercontext.builtin.artifacts.prompt import PromptRegistry
 from powercontext.builtin.artifacts.prompt.builtin import builtin_prompt_definitions
 from powercontext.builtin.artifacts.prompt.service import DemonstrationGenerator
 from powercontext.builtin.artifacts.skill import AgentSkillProvider, ExternalSkillProvider, SkillGenerator
-from powercontext.builtin.artifacts.topic_memory import TOPIC_MEMORY_SOURCE_WINDOW_BINDING
+from powercontext.builtin.artifacts.topic_memory import (
+    TOPIC_MEMORY_SOURCE_WINDOW_BINDING,
+    TopicMemorySearchResult,
+)
 from powercontext.builtin.artifacts.topic_memory.generation import (
     TopicMemoryGenerationError,
     topic_memory_stage_budget,
@@ -83,9 +86,9 @@ from powercontext.builtin.inference.usage import (
 from powercontext.builtin.persistence.dream_schema import ensure_dream_schema
 from powercontext.builtin.persistence.memory_index import CompositeMemoryIndex, MemoryIndex
 from powercontext.builtin.persistence.oceanbase.experience_index import OceanBaseExperienceFTSIndex
+from powercontext.builtin.persistence.oceanbase.hybrid_index import OceanBaseHybridMemoryIndex
 from powercontext.builtin.persistence.oceanbase.memory_index import (
     OceanBaseMemoryFTSIndex,
-    OceanBaseMemoryVectorIndex,
 )
 from powercontext.builtin.persistence.oceanbase.profile import OceanBaseConfig, OceanBaseProfile
 from powercontext.builtin.persistence.oceanbase.topic_memory_index import (
@@ -99,6 +102,7 @@ from powercontext.builtin.persistence.processing_migration import (
 from powercontext.builtin.persistence.scope_search_schema import ensure_scope_search_schema
 from powercontext.builtin.persistence.seekdb.profile import SeekDBConfig, SeekDBProfile
 from powercontext.builtin.persistence.skill_distribution_schema import ensure_skill_distribution_schema
+from powercontext.builtin.persistence.source_lifecycle_schema import ensure_source_lifecycle_schema
 from powercontext.builtin.persistence.sqlite.experience_index import SQLiteExperienceFTSIndex
 from powercontext.builtin.persistence.sqlite.memory_index import SQLiteMemoryFTSIndex, SQLiteMemoryVectorIndex
 from powercontext.builtin.persistence.sqlite.profile import SQLiteConfig, SQLiteProfile
@@ -156,6 +160,7 @@ from powercontext.builtin.runtime.readiness import (
 )
 from powercontext.builtin.runtime.recall_sufficiency import RecallSufficiencyPolicy
 from powercontext.builtin.runtime.relational import RelationalContexts
+from powercontext.builtin.runtime.source_lifecycle import SourceLifecycleStore
 from powercontext.builtin.runtime.topic_memory_processing import (
     TopicMemoryWorkerSpec,
     run_topic_memory_worker,
@@ -507,6 +512,23 @@ async def open_builtin_runtime(
         )
         contexts.profiles.generator = generated_profile if profile_generator is None else profile_generator
         contexts.profiles.max_sources = config.runtime.profile_max_sources_per_window
+        lifecycle_store = SourceLifecycleStore(contexts.database)
+
+        async def lifecycle_topic_search(
+            scope_id: str,
+            query: str,
+            /,
+            **options: Any,
+        ) -> TopicMemorySearchResult:
+            result = await contexts.search_topic_memories(scope_id, query, **options)
+            inactive = await lifecycle_store.inactive_topic_ids(scope_id)
+            if not inactive:
+                return result
+            hits = tuple(hit for hit in result.hits if hit.artifact_ref.artifact_id not in inactive)
+            if len(hits) == len(result.hits):
+                return result
+            return result.model_copy(update={"hits": hits})
+
         if scheduled_profile_runner is not None:
 
             async def run_profile(scope_id, high):
@@ -615,6 +637,7 @@ async def open_builtin_runtime(
                     authorization_context=dream_authorization_context,
                     attest_candidate=dream_candidate_attester,
                 ),
+                source_lifecycle_store=lifecycle_store,
                 generation_concurrency=config.runtime.generation_concurrency,
                 experience_recall=contexts.search_experience_outcome,
                 skill_recall=contexts.search_skills,
@@ -627,7 +650,7 @@ async def open_builtin_runtime(
                 skill_package_uploader=contexts.upload_skill_package,
                 skill_usage_recorder=contexts.record_skill_usage,
                 experience_incubator=contexts.incubate_experience if contexts.experience_incubation else None,
-                topic_memory_search=contexts.search_topic_memories,
+                topic_memory_search=lifecycle_topic_search,
                 topic_memory_get=contexts.get_topic_memory,
                 topic_memory_browse=contexts.browse_topic_memories,
                 topic_memory_flush=contexts.request_topic_memory_flush,
@@ -787,6 +810,7 @@ def _artifact_processing_bindings(  # noqa: C901 - validate and assemble one reg
                 if family == "skill"
                 else SourceProcessingPendingProvider(contexts.database, binding, family),
                 automatic_scope_filter=enabled_profile_scopes if family == "profile" else None,
+                source_count_threshold=getattr(config.runtime, f"{prefix}_source_count_threshold", None),
             )
         )
     _validate_processing_registrations(configured)
@@ -902,6 +926,7 @@ async def open_builtin_contexts(
                 await ensure_topic_memory_tag_schema(connection)
                 await ensure_dream_schema(connection)
                 await ensure_scope_search_schema(connection)
+                await ensure_source_lifecycle_schema(connection)
                 # A Topic child reuses its parent's schema. It never reads or
                 # writes Memory/Experience projections; rebuilding their FTS
                 # indexes here would take the shared SQLite write lock once
@@ -960,10 +985,11 @@ async def open_builtin_contexts(
                 await contexts.aclose_usage_recorder()
         return
     experience_index = OceanBaseExperienceFTSIndex()
-    indexes = [OceanBaseMemoryFTSIndex()]
-    if embedding_model is not None:
-        indexes.append(OceanBaseMemoryVectorIndex(embedding_model.profile))
-    index = CompositeMemoryIndex(*indexes)
+    index: MemoryIndex = (
+        OceanBaseMemoryFTSIndex()
+        if embedding_model is None
+        else OceanBaseHybridMemoryIndex(embedding_model.profile)
+    )
     topic_indexes: list[TopicMemoryIndex] = [OceanBaseTopicMemoryFTSIndex()]
     if embedding_model is not None:
         topic_indexes.append(OceanBaseTopicMemoryVectorIndex(embedding_model.profile))
@@ -983,6 +1009,7 @@ async def open_builtin_contexts(
             await ensure_topic_memory_tag_schema(connection)
             await ensure_dream_schema(connection)
             await ensure_scope_search_schema(connection)
+            await ensure_source_lifecycle_schema(connection)
             if not _topic_memory_worker:
                 await index.initialize(connection)
                 await experience_index.initialize(connection)
