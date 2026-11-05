@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LocalBase · 性能实验室</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="/src/benchmark.css" />
+  </head>
+  <body data-status="idle">
+    <header class="lab-header">
+      <a class="lab-brand" href="/">LocalBase<span>.</span></a>
+      <a href="/">← 返回知识库</a>
+    </header>
+    <main class="lab-main">
+      <p class="lab-eyebrow">REPRODUCIBLE BENCHMARK / 固定评测集 V1</p>
+      <h1>性能实验室<span>不是跑一次，而是留下每次证据。</span></h1>
+      <p class="lab-intro">使用相同 12 篇文档、9 组查询及相关性标注，在浏览器中重新建库并测量。所有 embedding 仍由本地 Worker 计算，检索由 seekdb hybridSearch 完成。</p>
+
+      <section class="lab-config">
+        <div class="config-top">
+          <div><strong>测试配置</strong><span id="backend-capability">正在检测 WebGPU…</span></div>
+          <button id="run-benchmark" class="lab-run">运行完整对比 →</button>
+        </div>
+        <div class="config-options">
+          <label><input id="run-fp32" type="checkbox" checked /> FP32 基线 + 自动后端</label>
+          <label><input id="run-int8" type="checkbox" checked /> 自适应 FP16 / INT8 + 自动后端</label>
+          <label><input id="run-wasm" type="checkbox" checked /> 自适应精度 + WASM（INT8）</label>
+          <label>重复轮数 <input id="benchmark-runs" type="number" min="1" max="5" value="3" /></label>
+          <label>批大小 <select id="benchmark-batch"><option>4</option><option selected>8</option><option>16</option><option>32</option></select></label>
+          <label class="cleanup"><input id="benchmark-cleanup" type="checkbox" checked /> 完成后删除临时集合</label>
+        </div>
+      </section>
+
+      <section class="lab-status">
+        <div><span id="benchmark-status">准备就绪</span><span id="benchmark-progress">0 / 0</span></div>
+        <div class="lab-progress-track"><div id="benchmark-progress-bar"></div></div>
+      </section>
+
+      <section class="lab-table-wrap">
+        <table>
+          <thead><tr><th>配置</th><th>模型体积</th><th>向量化吞吐</th><th>seekdb 检索 P50</th><th>端到端 P50</th><th>Recall@5</th><th>nDCG@5</th></tr></thead>
+          <tbody id="benchmark-results"><tr class="lab-empty"><td colspan="7">运行测试后展示实测结果</td></tr></tbody>
+        </table>
+      </section>
+
+      <section class="lab-evidence">
+        <div><h2>实验上下文</h2><p id="environment-info"></p><p id="model-info"></p></div>
+        <button id="export-benchmark" disabled>导出完整 JSON ↓</button>
+      </section>
+      <details class="lab-raw"><summary>查看本轮原始记录</summary><pre id="raw-output">尚未运行</pre></details>
+      <p class="lab-note">说明：吞吐为文档分块数 / 纯 embedding 推理时间；端到端从提交查询计时到收到可展示的检索结果。表格延迟为全部查询与重复轮次的中位数，Recall@5 与 nDCG@5 先按查询计算再取平均。模型体积采用下载脚本记录的实际 ONNX 文件字节数。</p>
+    </main>
+    <script type="module" src="/src/benchmark.js"></script>
+  </body>
+</html>

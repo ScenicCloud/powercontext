@@ -1,0 +1,40 @@
+:root { font-family: Inter, "PingFang SC", sans-serif; color: #17353b; background: #f3f5f0; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+a { color: inherit; text-decoration: none; }
+.lab-header { height: 68px; padding: 0 max(24px, calc((100vw - 1240px)/2)); display: flex; align-items: center; justify-content: space-between; background: white; border-bottom: 1px solid #dce2da; font-size: 12px; }
+.lab-brand { font-size: 21px; font-weight: 800; }
+.lab-brand span, h1 span { color: #79934e; }
+.lab-main { max-width: 1240px; margin: 0 auto; padding: 52px 24px; }
+.lab-eyebrow { font: 700 10px monospace; letter-spacing: 1.8px; color: #6c863f; }
+h1 { font-size: 37px; letter-spacing: -1.3px; margin: 15px 0; }
+h1 span { display: block; font-size: 20px; font-weight: 500; letter-spacing: -.5px; margin-top: 8px; }
+.lab-intro { max-width: 780px; color: #6d7d7c; font-size: 13px; line-height: 1.9; }
+.lab-config, .lab-status, .lab-table-wrap, .lab-evidence, .lab-raw { background: white; border: 1px solid #dce2da; border-radius: 12px; margin-top: 24px; padding: 23px; }
+.config-top { display: flex; justify-content: space-between; align-items: center; }
+.config-top > div { display: flex; flex-direction: column; gap: 6px; }
+.config-top strong { font-size: 14px; }
+.config-top span { color: #7c8b86; font-size: 10px; }
+.lab-run, #export-benchmark { border: 0; border-radius: 7px; padding: 12px 17px; background: #17353b; color: white; font-weight: 700; font-size: 12px; cursor: pointer; }
+.lab-run:disabled, #export-benchmark:disabled { opacity: .45; cursor: not-allowed; }
+.config-options { display: flex; flex-wrap: wrap; gap: 15px 23px; border-top: 1px solid #e7ebe4; margin-top: 18px; padding-top: 18px; }
+.config-options label { display: flex; align-items: center; gap: 6px; color: #61716d; font-size: 11px; }
+.config-options input[type="number"], .config-options select { width: 53px; padding: 5px; border: 1px solid #d5ddd2; border-radius: 4px; background: white; }
+.cleanup { margin-left: auto; }
+.lab-status > div:first-child { display: flex; justify-content: space-between; font-size: 11px; color: #667873; }
+.lab-progress-track { height: 5px; background: #e9ede5; border-radius: 5px; margin-top: 13px; overflow: hidden; }
+#benchmark-progress-bar { height: 100%; width: 0; background: #8bad55; transition: width .2s; }
+.lab-table-wrap { padding: 0; overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; min-width: 900px; }
+th { text-align: left; color: #71817c; background: #f8faf6; font-size: 10px; font-weight: 650; padding: 15px 17px; border-bottom: 1px solid #e2e7de; }
+td { padding: 18px 17px; border-bottom: 1px solid #edf0eb; font: 11px "SFMono-Regular", Consolas, monospace; }
+td:first-child { font-family: inherit; font-weight: 700; }
+td small { display: block; color: #86958e; font-weight: 400; margin-top: 5px; }
+.lab-empty td { text-align: center; color: #96a19c; padding: 40px; font-family: inherit; }
+.lab-evidence { display: flex; justify-content: space-between; align-items: center; }
+.lab-evidence h2 { font-size: 13px; margin: 0 0 8px; }
+.lab-evidence p { color: #71817c; font-size: 10px; line-height: 1.8; margin: 4px 0; max-width: 850px; overflow-wrap: anywhere; }
+.lab-raw summary { cursor: pointer; font-size: 11px; color: #62736e; }
+.lab-raw pre { max-height: 360px; overflow: auto; background: #17353b; color: #c7f277; border-radius: 8px; padding: 17px; font-size: 10px; white-space: pre-wrap; }
+.lab-note { color: #7b8a85; font-size: 10px; line-height: 1.8; }
+@media (max-width: 700px) { .config-top, .lab-evidence { align-items: flex-start; flex-direction: column; gap: 17px; } .cleanup { margin-left: 0; } h1 { font-size: 30px; } }

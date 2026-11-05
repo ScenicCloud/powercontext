@@ -1,0 +1,19 @@
+{
+  "collection": "e2e_mw3hfbp5",
+  "checks": [
+    "create and select collection",
+    "browser WASM embedding, seekdb write and index refresh",
+    "local query embedding and database hybrid results",
+    "incremental duplicate skip without collection growth",
+    "duplicate retry refreshes an interrupted unindexed write",
+    "collection switch restores current documents and count",
+    "test collection cleanup"
+  ],
+  "consoleErrors": [],
+  "importedCount": 4,
+  "firstResult": "seekdb-guide",
+  "searchMs": "6.1 ms",
+  "totalMs": "24.8 ms",
+  "backend": "WASM (WebGPU disabled by browser flag)",
+  "passed": true
+}

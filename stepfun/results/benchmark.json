@@ -1,0 +1,1537 @@
+{
+  "startedAt": "2026-11-05T11:42:28.481Z",
+  "finishedAt": "2026-11-05T11:42:34.141Z",
+  "environment": {
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+    "hardwareConcurrency": 10,
+    "deviceMemory": 8,
+    "webgpuDetected": "webgpu",
+    "webgpuFeatures": [
+      "depth32float-stencil8",
+      "chromium-experimental-subgroup-matrix",
+      "rg11b10ufloat-renderable",
+      "bgra8unorm-storage",
+      "texture-compression-bc",
+      "dual-source-blending",
+      "chromium-experimental-snorm16-texture-formats",
+      "core-features-and-limits",
+      "float32-filterable",
+      "indirect-first-instance",
+      "texture-compression-astc-sliced-3d",
+      "float32-blendable",
+      "texture-compression-astc",
+      "texture-compression-etc2",
+      "depth-clip-control",
+      "texture-compression-bc-sliced-3d",
+      "timestamp-query",
+      "shader-f16",
+      "clip-distances",
+      "chromium-experimental-unorm16-texture-formats",
+      "primitive-index",
+      "texture-component-swizzle",
+      "subgroups"
+    ],
+    "webgpuAdapter": {
+      "vendor": "apple",
+      "architecture": "metal-3",
+      "device": "",
+      "description": ""
+    }
+  },
+  "model": {
+    "model": "Xenova/all-MiniLM-L6-v2",
+    "revision": "751bff37182d3f1213fa05d7196b954e230abad9",
+    "source": "https://huggingface.co/Xenova/all-MiniLM-L6-v2/tree/751bff37182d3f1213fa05d7196b954e230abad9",
+    "downloadedAt": "2026-11-05T11:39:24.685Z",
+    "files": {
+      "config.json": {
+        "bytes": 650,
+        "sha256": "7135149f7cffa1a573466c6e4d8423ed73b62fd2332c575bf738a0d033f70df7"
+      },
+      "tokenizer.json": {
+        "bytes": 711661,
+        "sha256": "da0e79933b9ed51798a3ae27893d3c5fa4a201126cef75586296df9b4d2c62a0"
+      },
+      "tokenizer_config.json": {
+        "bytes": 366,
+        "sha256": "9261e7d79b44c8195c1cada2b453e55b00aeb81e907a6664974b4d7776172ab3"
+      },
+      "vocab.txt": {
+        "bytes": 231508,
+        "sha256": "07eced375cec144d27c900241f3e339478dec958f92fddbc551f295c992038a3"
+      },
+      "special_tokens_map.json": {
+        "bytes": 125,
+        "sha256": "b6d346be366a7d1d48332dbc9fdf3bf8960b5d879522b7799ddba59e76237ee3"
+      },
+      "onnx/model.onnx": {
+        "bytes": 90387606,
+        "sha256": "759c3cd2b7fe7e93933ad23c4c9181b7396442a2ed746ec7c1d46192c469c46e"
+      },
+      "onnx/model_fp16.onnx": {
+        "bytes": 45297825,
+        "sha256": "2cdb5e58291813b6d6e248ed69010100246821a367fa17b1b81ae9483744533d"
+      },
+      "onnx/model_quantized.onnx": {
+        "bytes": 22972370,
+        "sha256": "afdb6f1a0e45b715d0bb9b11772f032c399babd23bfc31fed1c170afc848bdb1"
+      }
+    },
+    "modelSizes": {
+      "fp32Bytes": 90387606,
+      "fp16Bytes": 45297825,
+      "int8Bytes": 22972370,
+      "fp16CompressionRatio": 1.995407196703153,
+      "compressionRatio": 3.9346225922706277
+    }
+  },
+  "dataset": {
+    "name": "LocalBase fixed retrieval evaluation v1",
+    "documents": 12,
+    "queries": 9,
+    "k": 5,
+    "runs": 3,
+    "batchSize": 8
+  },
+  "runs": [
+    {
+      "label": "FP32 基线 + 自动后端",
+      "requestedBackend": "auto",
+      "dtype": "fp32",
+      "collection": "bench_fp32_mw3h7jb8_0",
+      "batches": [
+        {
+          "chunks": 8,
+          "embeddingMs": 59,
+          "writeMs": 14.631583000009414
+        },
+        {
+          "chunks": 4,
+          "embeddingMs": 16.09999999962747,
+          "writeMs": 6.765832999997656
+        }
+      ],
+      "queries": [
+        {
+          "run": 0,
+          "query": "How does the application fall back when GPU acceleration is unavailable?",
+          "embeddingMs": 22.40000000037253,
+          "searchMs": 6.501875000001746,
+          "totalMs": 35.80000000074506,
+          "sources": [
+            "webgpu.txt",
+            "wasm.txt",
+            "privacy.txt",
+            "caching.txt",
+            "int8.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 0,
+          "query": "What are the size and quality effects of eight bit quantization?",
+          "embeddingMs": 19.600000001490116,
+          "searchMs": 1.9254169999912847,
+          "totalMs": 25.40000000037253,
+          "sources": [
+            "int8.txt",
+            "fp32.txt",
+            "caching.txt",
+            "privacy.txt",
+            "refresh.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 0,
+          "query": "How are lexical and semantic candidate rankings combined?",
+          "embeddingMs": 11.700000001117587,
+          "searchMs": 1.6635419999947771,
+          "totalMs": 17,
+          "sources": [
+            "fulltext.txt",
+            "rrf.txt",
+            "vector.txt",
+            "refresh.txt",
+            "privacy.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 0,
+          "query": "Which method finds related meaning when different words are used?",
+          "embeddingMs": 13.599999999627471,
+          "searchMs": 1.6422909999964759,
+          "totalMs": 18.5,
+          "sources": [
+            "vector.txt",
+            "fulltext.txt",
+            "refresh.txt",
+            "rrf.txt",
+            "wasm.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 0,
+          "query": "What graph index accelerates approximate nearest neighbor search?",
+          "embeddingMs": 11.400000000372529,
+          "searchMs": 1.5327499999984866,
+          "totalMs": 16.300000000745058,
+          "sources": [
+            "hnsw.txt",
+            "vector.txt",
+            "refresh.txt",
+            "fulltext.txt",
+            "rrf.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 0,
+          "query": "Why should first model loading be measured separately from warm inference?",
+          "embeddingMs": 12.400000000372529,
+          "searchMs": 1.508417000004556,
+          "totalMs": 17.09999999962747,
+          "sources": [
+            "caching.txt",
+            "privacy.txt",
+            "fp32.txt",
+            "batching.txt",
+            "int8.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 0,
+          "query": "How can repeated imports avoid embedding the same chunks again?",
+          "embeddingMs": 12.200000001117587,
+          "searchMs": 1.4588329999969574,
+          "totalMs": 16.800000000745058,
+          "sources": [
+            "refresh.txt",
+            "batching.txt",
+            "vector.txt",
+            "wasm.txt",
+            "caching.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 0,
+          "query": "Does private document encoding require a remote inference API?",
+          "embeddingMs": 10.900000000372529,
+          "searchMs": 1.3586250000080327,
+          "totalMs": 15.5,
+          "sources": [
+            "privacy.txt",
+            "wasm.txt",
+            "vector.txt",
+            "caching.txt",
+            "int8.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 0,
+          "query": "What is the throughput and memory tradeoff of processing chunks together?",
+          "embeddingMs": 10.900000000372529,
+          "searchMs": 1.3891250000015134,
+          "totalMs": 15.700000001117587,
+          "sources": [
+            "batching.txt",
+            "caching.txt",
+            "rrf.txt",
+            "fulltext.txt",
+            "wasm.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 1,
+          "query": "How does the application fall back when GPU acceleration is unavailable?",
+          "embeddingMs": 13.199999999254942,
+          "searchMs": 1.378499999991618,
+          "totalMs": 17.699999999254942,
+          "sources": [
+            "webgpu.txt",
+            "wasm.txt",
+            "privacy.txt",
+            "caching.txt",
+            "int8.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 1,
+          "query": "What are the size and quality effects of eight bit quantization?",
+          "embeddingMs": 11.5,
+          "searchMs": 1.4017500000045402,
+          "totalMs": 16,
+          "sources": [
+            "int8.txt",
+            "fp32.txt",
+            "caching.txt",
+            "privacy.txt",
+            "refresh.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 1,
+          "query": "How are lexical and semantic candidate rankings combined?",
+          "embeddingMs": 12.199999999254942,
+          "searchMs": 1.4924160000082338,
+          "totalMs": 17,
+          "sources": [
+            "fulltext.txt",
+            "rrf.txt",
+            "vector.txt",
+            "refresh.txt",
+            "privacy.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 1,
+          "query": "Which method finds related meaning when different words are used?",
+          "embeddingMs": 11.099999999627471,
+          "searchMs": 1.467540999990888,
+          "totalMs": 16.09999999962747,
+          "sources": [
+            "vector.txt",
+            "fulltext.txt",
+            "refresh.txt",
+            "rrf.txt",
+            "wasm.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 1,
+          "query": "What graph index accelerates approximate nearest neighbor search?",
+          "embeddingMs": 12.099999999627471,
+          "searchMs": 1.358749999999418,
+          "totalMs": 16.5,
+          "sources": [
+            "hnsw.txt",
+            "vector.txt",
+            "refresh.txt",
+            "fulltext.txt",
+            "rrf.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 1,
+          "query": "Why should first model loading be measured separately from warm inference?",
+          "embeddingMs": 11.700000001117587,
+          "searchMs": 1.3581669999985024,
+          "totalMs": 16.200000001117587,
+          "sources": [
+            "caching.txt",
+            "privacy.txt",
+            "fp32.txt",
+            "batching.txt",
+            "int8.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 1,
+          "query": "How can repeated imports avoid embedding the same chunks again?",
+          "embeddingMs": 12,
+          "searchMs": 1.2975420000002487,
+          "totalMs": 16.299999998882413,
+          "sources": [
+            "refresh.txt",
+            "batching.txt",
+            "vector.txt",
+            "wasm.txt",
+            "caching.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 1,
+          "query": "Does private document encoding require a remote inference API?",
+          "embeddingMs": 10.900000000372529,
+          "searchMs": 1.2849159999896074,
+          "totalMs": 15.200000001117587,
+          "sources": [
+            "privacy.txt",
+            "wasm.txt",
+            "vector.txt",
+            "caching.txt",
+            "int8.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 1,
+          "query": "What is the throughput and memory tradeoff of processing chunks together?",
+          "embeddingMs": 14.199999999254942,
+          "searchMs": 1.344666999997571,
+          "totalMs": 18.399999998509884,
+          "sources": [
+            "batching.txt",
+            "caching.txt",
+            "rrf.txt",
+            "fulltext.txt",
+            "wasm.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 2,
+          "query": "How does the application fall back when GPU acceleration is unavailable?",
+          "embeddingMs": 10.799999998882413,
+          "searchMs": 1.3065840000053868,
+          "totalMs": 15,
+          "sources": [
+            "webgpu.txt",
+            "wasm.txt",
+            "privacy.txt",
+            "caching.txt",
+            "int8.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 2,
+          "query": "What are the size and quality effects of eight bit quantization?",
+          "embeddingMs": 14.299999998882413,
+          "searchMs": 1.4526670000050217,
+          "totalMs": 18.399999998509884,
+          "sources": [
+            "int8.txt",
+            "fp32.txt",
+            "caching.txt",
+            "privacy.txt",
+            "refresh.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 2,
+          "query": "How are lexical and semantic candidate rankings combined?",
+          "embeddingMs": 10.400000000372529,
+          "searchMs": 1.2810000000026776,
+          "totalMs": 14.599999999627471,
+          "sources": [
+            "fulltext.txt",
+            "rrf.txt",
+            "vector.txt",
+            "refresh.txt",
+            "privacy.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 2,
+          "query": "Which method finds related meaning when different words are used?",
+          "embeddingMs": 14.099999999627471,
+          "searchMs": 1.2999589999963064,
+          "totalMs": 18.5,
+          "sources": [
+            "vector.txt",
+            "fulltext.txt",
+            "refresh.txt",
+            "rrf.txt",
+            "wasm.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 2,
+          "query": "What graph index accelerates approximate nearest neighbor search?",
+          "embeddingMs": 10.800000000745058,
+          "searchMs": 1.2529999999969732,
+          "totalMs": 14.900000000372529,
+          "sources": [
+            "hnsw.txt",
+            "vector.txt",
+            "refresh.txt",
+            "fulltext.txt",
+            "rrf.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 2,
+          "query": "Why should first model loading be measured separately from warm inference?",
+          "embeddingMs": 13.699999999254942,
+          "searchMs": 1.3044999999983702,
+          "totalMs": 17.800000000745058,
+          "sources": [
+            "caching.txt",
+            "privacy.txt",
+            "fp32.txt",
+            "batching.txt",
+            "int8.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 2,
+          "query": "How can repeated imports avoid embedding the same chunks again?",
+          "embeddingMs": 11.399999998509884,
+          "searchMs": 1.3371250000054715,
+          "totalMs": 15.399999998509884,
+          "sources": [
+            "refresh.txt",
+            "batching.txt",
+            "vector.txt",
+            "wasm.txt",
+            "caching.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 2,
+          "query": "Does private document encoding require a remote inference API?",
+          "embeddingMs": 13.5,
+          "searchMs": 1.326708000007784,
+          "totalMs": 17.700000001117587,
+          "sources": [
+            "privacy.txt",
+            "wasm.txt",
+            "vector.txt",
+            "caching.txt",
+            "int8.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 2,
+          "query": "What is the throughput and memory tradeoff of processing chunks together?",
+          "embeddingMs": 10.599999999627471,
+          "searchMs": 1.297500000000582,
+          "totalMs": 14.799999998882413,
+          "sources": [
+            "batching.txt",
+            "caching.txt",
+            "rrf.txt",
+            "fulltext.txt",
+            "wasm.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        }
+      ],
+      "backend": "webgpu",
+      "fallbackReason": null,
+      "modelLoadMs": 1380.5,
+      "warmupMs": 65.70000000111759,
+      "modelBytes": 90387606,
+      "embeddingMs": 75.09999999962747,
+      "writeMs": 21.39741600000707,
+      "refreshMs": 428.041624999998
+    },
+    {
+      "label": "自适应 FP16/INT8 + 自动后端",
+      "requestedBackend": "auto",
+      "dtype": "fp16",
+      "collection": "bench_auto_mw3h7l97_1",
+      "batches": [
+        {
+          "chunks": 8,
+          "embeddingMs": 48.30000000074506,
+          "writeMs": 15.365416999993613
+        },
+        {
+          "chunks": 4,
+          "embeddingMs": 15.300000000745058,
+          "writeMs": 6.58125000000291
+        }
+      ],
+      "queries": [
+        {
+          "run": 0,
+          "query": "How does the application fall back when GPU acceleration is unavailable?",
+          "embeddingMs": 15.699999999254942,
+          "searchMs": 6.053792000006069,
+          "totalMs": 26.800000000745058,
+          "sources": [
+            "webgpu.txt",
+            "wasm.txt",
+            "privacy.txt",
+            "caching.txt",
+            "int8.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 0,
+          "query": "What are the size and quality effects of eight bit quantization?",
+          "embeddingMs": 16.5,
+          "searchMs": 2.0877500000060536,
+          "totalMs": 22.700000001117587,
+          "sources": [
+            "int8.txt",
+            "fp32.txt",
+            "caching.txt",
+            "privacy.txt",
+            "refresh.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 0,
+          "query": "How are lexical and semantic candidate rankings combined?",
+          "embeddingMs": 11.199999999254942,
+          "searchMs": 1.7632500000036089,
+          "totalMs": 16.5,
+          "sources": [
+            "fulltext.txt",
+            "rrf.txt",
+            "vector.txt",
+            "refresh.txt",
+            "privacy.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 0,
+          "query": "Which method finds related meaning when different words are used?",
+          "embeddingMs": 10.400000000372529,
+          "searchMs": 1.6260000000038417,
+          "totalMs": 15.5,
+          "sources": [
+            "vector.txt",
+            "fulltext.txt",
+            "refresh.txt",
+            "rrf.txt",
+            "wasm.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 0,
+          "query": "What graph index accelerates approximate nearest neighbor search?",
+          "embeddingMs": 11.600000001490116,
+          "searchMs": 1.4472080000123242,
+          "totalMs": 16.300000000745058,
+          "sources": [
+            "hnsw.txt",
+            "vector.txt",
+            "refresh.txt",
+            "fulltext.txt",
+            "rrf.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 0,
+          "query": "Why should first model loading be measured separately from warm inference?",
+          "embeddingMs": 12.099999999627471,
+          "searchMs": 1.4659580000006827,
+          "totalMs": 16.700000001117587,
+          "sources": [
+            "caching.txt",
+            "privacy.txt",
+            "fp32.txt",
+            "batching.txt",
+            "int8.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 0,
+          "query": "How can repeated imports avoid embedding the same chunks again?",
+          "embeddingMs": 11.599999999627471,
+          "searchMs": 1.4769999999989523,
+          "totalMs": 16.399999998509884,
+          "sources": [
+            "refresh.txt",
+            "batching.txt",
+            "vector.txt",
+            "wasm.txt",
+            "caching.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 0,
+          "query": "Does private document encoding require a remote inference API?",
+          "embeddingMs": 11,
+          "searchMs": 1.3767919999954756,
+          "totalMs": 15.700000001117587,
+          "sources": [
+            "privacy.txt",
+            "wasm.txt",
+            "vector.txt",
+            "caching.txt",
+            "int8.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 0,
+          "query": "What is the throughput and memory tradeoff of processing chunks together?",
+          "embeddingMs": 11.199999999254942,
+          "searchMs": 1.3812500000058208,
+          "totalMs": 15.699999999254942,
+          "sources": [
+            "batching.txt",
+            "caching.txt",
+            "rrf.txt",
+            "fulltext.txt",
+            "wasm.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 1,
+          "query": "How does the application fall back when GPU acceleration is unavailable?",
+          "embeddingMs": 12.200000001117587,
+          "searchMs": 1.3456659999937983,
+          "totalMs": 16.40000000037253,
+          "sources": [
+            "webgpu.txt",
+            "wasm.txt",
+            "privacy.txt",
+            "caching.txt",
+            "int8.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 1,
+          "query": "What are the size and quality effects of eight bit quantization?",
+          "embeddingMs": 10,
+          "searchMs": 1.367207999996026,
+          "totalMs": 14.599999999627471,
+          "sources": [
+            "int8.txt",
+            "fp32.txt",
+            "caching.txt",
+            "privacy.txt",
+            "refresh.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 1,
+          "query": "How are lexical and semantic candidate rankings combined?",
+          "embeddingMs": 13.200000001117587,
+          "searchMs": 1.3537079999950947,
+          "totalMs": 17.90000000037253,
+          "sources": [
+            "fulltext.txt",
+            "rrf.txt",
+            "vector.txt",
+            "refresh.txt",
+            "privacy.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 1,
+          "query": "Which method finds related meaning when different words are used?",
+          "embeddingMs": 10.900000000372529,
+          "searchMs": 1.4728330000070855,
+          "totalMs": 15.700000001117587,
+          "sources": [
+            "vector.txt",
+            "fulltext.txt",
+            "refresh.txt",
+            "rrf.txt",
+            "wasm.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 1,
+          "query": "What graph index accelerates approximate nearest neighbor search?",
+          "embeddingMs": 13.5,
+          "searchMs": 1.3555830000113929,
+          "totalMs": 17.899999998509884,
+          "sources": [
+            "hnsw.txt",
+            "vector.txt",
+            "refresh.txt",
+            "fulltext.txt",
+            "rrf.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 1,
+          "query": "Why should first model loading be measured separately from warm inference?",
+          "embeddingMs": 10.799999998882413,
+          "searchMs": 1.3650409999972908,
+          "totalMs": 15.299999998882413,
+          "sources": [
+            "caching.txt",
+            "privacy.txt",
+            "fp32.txt",
+            "batching.txt",
+            "int8.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 1,
+          "query": "How can repeated imports avoid embedding the same chunks again?",
+          "embeddingMs": 13.100000001490116,
+          "searchMs": 1.3165420000004815,
+          "totalMs": 17.300000000745058,
+          "sources": [
+            "refresh.txt",
+            "batching.txt",
+            "vector.txt",
+            "wasm.txt",
+            "caching.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 1,
+          "query": "Does private document encoding require a remote inference API?",
+          "embeddingMs": 11,
+          "searchMs": 1.2680409999884432,
+          "totalMs": 15,
+          "sources": [
+            "privacy.txt",
+            "wasm.txt",
+            "vector.txt",
+            "caching.txt",
+            "int8.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 1,
+          "query": "What is the throughput and memory tradeoff of processing chunks together?",
+          "embeddingMs": 14.099999999627471,
+          "searchMs": 1.3087499999965075,
+          "totalMs": 18.300000000745058,
+          "sources": [
+            "batching.txt",
+            "caching.txt",
+            "rrf.txt",
+            "fulltext.txt",
+            "wasm.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 2,
+          "query": "How does the application fall back when GPU acceleration is unavailable?",
+          "embeddingMs": 10.799999998882413,
+          "searchMs": 1.3007079999952111,
+          "totalMs": 14.699999999254942,
+          "sources": [
+            "webgpu.txt",
+            "wasm.txt",
+            "privacy.txt",
+            "caching.txt",
+            "int8.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 2,
+          "query": "What are the size and quality effects of eight bit quantization?",
+          "embeddingMs": 14,
+          "searchMs": 1.267582999993465,
+          "totalMs": 18,
+          "sources": [
+            "int8.txt",
+            "fp32.txt",
+            "caching.txt",
+            "privacy.txt",
+            "refresh.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 2,
+          "query": "How are lexical and semantic candidate rankings combined?",
+          "embeddingMs": 10.5,
+          "searchMs": 1.2959160000027623,
+          "totalMs": 14.5,
+          "sources": [
+            "fulltext.txt",
+            "rrf.txt",
+            "vector.txt",
+            "refresh.txt",
+            "privacy.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 2,
+          "query": "Which method finds related meaning when different words are used?",
+          "embeddingMs": 14,
+          "searchMs": 1.2508339999913005,
+          "totalMs": 17.90000000037253,
+          "sources": [
+            "vector.txt",
+            "fulltext.txt",
+            "refresh.txt",
+            "rrf.txt",
+            "wasm.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 2,
+          "query": "What graph index accelerates approximate nearest neighbor search?",
+          "embeddingMs": 11.200000001117587,
+          "searchMs": 1.2276249999995343,
+          "totalMs": 15.200000001117587,
+          "sources": [
+            "hnsw.txt",
+            "vector.txt",
+            "refresh.txt",
+            "fulltext.txt",
+            "rrf.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 2,
+          "query": "Why should first model loading be measured separately from warm inference?",
+          "embeddingMs": 14,
+          "searchMs": 1.3179590000072494,
+          "totalMs": 18.09999999962747,
+          "sources": [
+            "caching.txt",
+            "privacy.txt",
+            "fp32.txt",
+            "batching.txt",
+            "int8.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 2,
+          "query": "How can repeated imports avoid embedding the same chunks again?",
+          "embeddingMs": 10.800000000745058,
+          "searchMs": 1.28125,
+          "totalMs": 15,
+          "sources": [
+            "refresh.txt",
+            "batching.txt",
+            "vector.txt",
+            "wasm.txt",
+            "caching.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 2,
+          "query": "Does private document encoding require a remote inference API?",
+          "embeddingMs": 12.900000000372529,
+          "searchMs": 1.307042000000365,
+          "totalMs": 17,
+          "sources": [
+            "privacy.txt",
+            "wasm.txt",
+            "vector.txt",
+            "caching.txt",
+            "int8.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 2,
+          "query": "What is the throughput and memory tradeoff of processing chunks together?",
+          "embeddingMs": 10.900000000372529,
+          "searchMs": 1.3296249999984866,
+          "totalMs": 15,
+          "sources": [
+            "batching.txt",
+            "caching.txt",
+            "rrf.txt",
+            "fulltext.txt",
+            "wasm.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        }
+      ],
+      "backend": "webgpu",
+      "fallbackReason": null,
+      "modelLoadMs": 410.80000000074506,
+      "warmupMs": 40.600000001490116,
+      "modelBytes": 45297825,
+      "embeddingMs": 63.600000001490116,
+      "writeMs": 21.946666999996523,
+      "refreshMs": 419.8187079999916
+    },
+    {
+      "label": "自适应 FP16/INT8 + WASM",
+      "requestedBackend": "wasm",
+      "dtype": "q8",
+      "collection": "bench_auto_mw3h7mds_2",
+      "batches": [
+        {
+          "chunks": 8,
+          "embeddingMs": 309.19999999925494,
+          "writeMs": 13.863542000006419
+        },
+        {
+          "chunks": 4,
+          "embeddingMs": 137,
+          "writeMs": 6.312334000002011
+        }
+      ],
+      "queries": [
+        {
+          "run": 0,
+          "query": "How does the application fall back when GPU acceleration is unavailable?",
+          "embeddingMs": 23.59999999962747,
+          "searchMs": 6.765833000012208,
+          "totalMs": 36.40000000037253,
+          "sources": [
+            "webgpu.txt",
+            "wasm.txt",
+            "privacy.txt",
+            "caching.txt",
+            "int8.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 0,
+          "query": "What are the size and quality effects of eight bit quantization?",
+          "embeddingMs": 12.900000000372529,
+          "searchMs": 1.586249999993015,
+          "totalMs": 17.899999998509884,
+          "sources": [
+            "int8.txt",
+            "fp32.txt",
+            "caching.txt",
+            "privacy.txt",
+            "refresh.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 0,
+          "query": "How are lexical and semantic candidate rankings combined?",
+          "embeddingMs": 8,
+          "searchMs": 1.534417000002577,
+          "totalMs": 12.900000000372529,
+          "sources": [
+            "rrf.txt",
+            "fulltext.txt",
+            "vector.txt",
+            "refresh.txt",
+            "caching.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 0,
+          "query": "Which method finds related meaning when different words are used?",
+          "embeddingMs": 8.200000001117587,
+          "searchMs": 1.2756670000089798,
+          "totalMs": 12.099999999627471,
+          "sources": [
+            "vector.txt",
+            "fulltext.txt",
+            "refresh.txt",
+            "rrf.txt",
+            "wasm.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 0,
+          "query": "What graph index accelerates approximate nearest neighbor search?",
+          "embeddingMs": 6.899999998509884,
+          "searchMs": 1.2726670000120066,
+          "totalMs": 11.199999999254942,
+          "sources": [
+            "hnsw.txt",
+            "vector.txt",
+            "refresh.txt",
+            "fulltext.txt",
+            "rrf.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 0,
+          "query": "Why should first model loading be measured separately from warm inference?",
+          "embeddingMs": 7.900000000372529,
+          "searchMs": 1.31745800000499,
+          "totalMs": 11.900000000372529,
+          "sources": [
+            "caching.txt",
+            "privacy.txt",
+            "batching.txt",
+            "fp32.txt",
+            "webgpu.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 0,
+          "query": "How can repeated imports avoid embedding the same chunks again?",
+          "embeddingMs": 8.099999999627471,
+          "searchMs": 1.1564169999910519,
+          "totalMs": 11.699999999254942,
+          "sources": [
+            "refresh.txt",
+            "batching.txt",
+            "vector.txt",
+            "caching.txt",
+            "wasm.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 0,
+          "query": "Does private document encoding require a remote inference API?",
+          "embeddingMs": 6.700000001117587,
+          "searchMs": 1.5092920000024606,
+          "totalMs": 11,
+          "sources": [
+            "privacy.txt",
+            "wasm.txt",
+            "vector.txt",
+            "caching.txt",
+            "int8.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 0,
+          "query": "What is the throughput and memory tradeoff of processing chunks together?",
+          "embeddingMs": 8.599999999627471,
+          "searchMs": 1.371000000013737,
+          "totalMs": 13,
+          "sources": [
+            "batching.txt",
+            "caching.txt",
+            "fulltext.txt",
+            "rrf.txt",
+            "wasm.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 1,
+          "query": "How does the application fall back when GPU acceleration is unavailable?",
+          "embeddingMs": 8.5,
+          "searchMs": 1.408207999993465,
+          "totalMs": 13.100000001490116,
+          "sources": [
+            "webgpu.txt",
+            "wasm.txt",
+            "privacy.txt",
+            "caching.txt",
+            "int8.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 1,
+          "query": "What are the size and quality effects of eight bit quantization?",
+          "embeddingMs": 8.800000000745058,
+          "searchMs": 1.323499999998603,
+          "totalMs": 13.5,
+          "sources": [
+            "int8.txt",
+            "fp32.txt",
+            "caching.txt",
+            "privacy.txt",
+            "refresh.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 1,
+          "query": "How are lexical and semantic candidate rankings combined?",
+          "embeddingMs": 7,
+          "searchMs": 1.3625000000029104,
+          "totalMs": 11.399999998509884,
+          "sources": [
+            "rrf.txt",
+            "fulltext.txt",
+            "vector.txt",
+            "refresh.txt",
+            "caching.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 1,
+          "query": "Which method finds related meaning when different words are used?",
+          "embeddingMs": 7.5,
+          "searchMs": 1.3400000000110595,
+          "totalMs": 12,
+          "sources": [
+            "vector.txt",
+            "fulltext.txt",
+            "refresh.txt",
+            "rrf.txt",
+            "wasm.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 1,
+          "query": "What graph index accelerates approximate nearest neighbor search?",
+          "embeddingMs": 7.099999999627471,
+          "searchMs": 1.294792000000598,
+          "totalMs": 11.200000001117587,
+          "sources": [
+            "hnsw.txt",
+            "vector.txt",
+            "refresh.txt",
+            "fulltext.txt",
+            "rrf.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 1,
+          "query": "Why should first model loading be measured separately from warm inference?",
+          "embeddingMs": 7.800000000745058,
+          "searchMs": 1.4267910000053234,
+          "totalMs": 12.599999999627471,
+          "sources": [
+            "caching.txt",
+            "privacy.txt",
+            "batching.txt",
+            "fp32.txt",
+            "webgpu.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 1,
+          "query": "How can repeated imports avoid embedding the same chunks again?",
+          "embeddingMs": 8.300000000745058,
+          "searchMs": 1.3485419999924488,
+          "totalMs": 12.5,
+          "sources": [
+            "refresh.txt",
+            "batching.txt",
+            "vector.txt",
+            "caching.txt",
+            "wasm.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 1,
+          "query": "Does private document encoding require a remote inference API?",
+          "embeddingMs": 6.899999998509884,
+          "searchMs": 1.3128339999966556,
+          "totalMs": 11,
+          "sources": [
+            "privacy.txt",
+            "wasm.txt",
+            "vector.txt",
+            "caching.txt",
+            "int8.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 1,
+          "query": "What is the throughput and memory tradeoff of processing chunks together?",
+          "embeddingMs": 8.800000000745058,
+          "searchMs": 1.2761249999894062,
+          "totalMs": 12.700000001117587,
+          "sources": [
+            "batching.txt",
+            "caching.txt",
+            "fulltext.txt",
+            "rrf.txt",
+            "wasm.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 2,
+          "query": "How does the application fall back when GPU acceleration is unavailable?",
+          "embeddingMs": 8.300000000745058,
+          "searchMs": 1.2551660000026459,
+          "totalMs": 12.199999999254942,
+          "sources": [
+            "webgpu.txt",
+            "wasm.txt",
+            "privacy.txt",
+            "caching.txt",
+            "int8.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 2,
+          "query": "What are the size and quality effects of eight bit quantization?",
+          "embeddingMs": 8.700000001117587,
+          "searchMs": 1.4674999999988358,
+          "totalMs": 12.700000001117587,
+          "sources": [
+            "int8.txt",
+            "fp32.txt",
+            "caching.txt",
+            "privacy.txt",
+            "refresh.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 2,
+          "query": "How are lexical and semantic candidate rankings combined?",
+          "embeddingMs": 6.700000001117587,
+          "searchMs": 1.3150409999943804,
+          "totalMs": 10.800000000745058,
+          "sources": [
+            "rrf.txt",
+            "fulltext.txt",
+            "vector.txt",
+            "refresh.txt",
+            "caching.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 2,
+          "query": "Which method finds related meaning when different words are used?",
+          "embeddingMs": 7.299999998882413,
+          "searchMs": 1.372124999994412,
+          "totalMs": 11.399999998509884,
+          "sources": [
+            "vector.txt",
+            "fulltext.txt",
+            "refresh.txt",
+            "rrf.txt",
+            "wasm.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 2,
+          "query": "What graph index accelerates approximate nearest neighbor search?",
+          "embeddingMs": 6.899999998509884,
+          "searchMs": 1.3174589999980526,
+          "totalMs": 11.399999998509884,
+          "sources": [
+            "hnsw.txt",
+            "vector.txt",
+            "refresh.txt",
+            "fulltext.txt",
+            "rrf.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 2,
+          "query": "Why should first model loading be measured separately from warm inference?",
+          "embeddingMs": 7.700000001117587,
+          "searchMs": 1.322083000006387,
+          "totalMs": 11.900000000372529,
+          "sources": [
+            "caching.txt",
+            "privacy.txt",
+            "batching.txt",
+            "fp32.txt",
+            "webgpu.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 2,
+          "query": "How can repeated imports avoid embedding the same chunks again?",
+          "embeddingMs": 8.400000000372529,
+          "searchMs": 1.3234579999989364,
+          "totalMs": 12.5,
+          "sources": [
+            "refresh.txt",
+            "batching.txt",
+            "vector.txt",
+            "caching.txt",
+            "wasm.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 2,
+          "query": "Does private document encoding require a remote inference API?",
+          "embeddingMs": 6.800000000745058,
+          "searchMs": 1.3522909999883268,
+          "totalMs": 10.700000001117587,
+          "sources": [
+            "privacy.txt",
+            "wasm.txt",
+            "vector.txt",
+            "caching.txt",
+            "int8.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        },
+        {
+          "run": 2,
+          "query": "What is the throughput and memory tradeoff of processing chunks together?",
+          "embeddingMs": 8.599999999627471,
+          "searchMs": 1.3847499999974389,
+          "totalMs": 13.199999999254942,
+          "sources": [
+            "batching.txt",
+            "caching.txt",
+            "fulltext.txt",
+            "rrf.txt",
+            "wasm.txt"
+          ],
+          "recall": 1,
+          "ndcg": 1
+        }
+      ],
+      "backend": "wasm",
+      "fallbackReason": null,
+      "modelLoadMs": 341.2999999988824,
+      "warmupMs": 28.699999999254942,
+      "modelBytes": 22972370,
+      "embeddingMs": 446.19999999925494,
+      "writeMs": 20.17587600000843,
+      "refreshMs": 439.5519580000109
+    }
+  ],
+  "configurations": [
+    {
+      "label": "FP32 基线 + 自动后端",
+      "dtype": "fp32",
+      "backend": "webgpu",
+      "batchSize": 8,
+      "modelBytes": 90387606,
+      "modelLoadMs": 1380.5,
+      "warmupMs": 65.70000000111759,
+      "embeddingMs": 75.09999999962747,
+      "writeMs": 21.39741600000707,
+      "refreshMs": 428.041624999998,
+      "throughput": 159.78695073314947,
+      "queryEmbeddingMsP50": 12,
+      "searchMsP50": 1.358749999999418,
+      "totalMsP50": 16.5,
+      "firstQueryTotalMs": 35.80000000074506,
+      "recallAt5": 1,
+      "ndcgAt5": 1
+    },
+    {
+      "label": "自适应 FP16/INT8 + 自动后端",
+      "dtype": "fp16",
+      "backend": "webgpu",
+      "batchSize": 8,
+      "modelBytes": 45297825,
+      "modelLoadMs": 410.80000000074506,
+      "warmupMs": 40.600000001490116,
+      "embeddingMs": 63.600000001490116,
+      "writeMs": 21.946666999996523,
+      "refreshMs": 419.8187079999916,
+      "throughput": 188.67924527859822,
+      "queryEmbeddingMsP50": 11.599999999627471,
+      "searchMsP50": 1.3537079999950947,
+      "totalMsP50": 16.399999998509884,
+      "firstQueryTotalMs": 26.800000000745058,
+      "recallAt5": 1,
+      "ndcgAt5": 1
+    },
+    {
+      "label": "自适应 FP16/INT8 + WASM",
+      "dtype": "q8",
+      "backend": "wasm",
+      "batchSize": 8,
+      "modelBytes": 22972370,
+      "modelLoadMs": 341.2999999988824,
+      "warmupMs": 28.699999999254942,
+      "embeddingMs": 446.19999999925494,
+      "writeMs": 20.17587600000843,
+      "refreshMs": 439.5519580000109,
+      "throughput": 26.893769610085247,
+      "queryEmbeddingMsP50": 8,
+      "searchMsP50": 1.3400000000110595,
+      "totalMsP50": 12.099999999627471,
+      "firstQueryTotalMs": 36.40000000037253,
+      "recallAt5": 1,
+      "ndcgAt5": 1
+    }
+  ]
+}

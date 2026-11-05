@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="浏览器本地向量化与 seekdb 混合检索迷你知识库" />
+    <title>LocalBase · 端侧知识库</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect width=%2232%22 height=%2232%22 rx=%228%22 fill=%22%2317353b%22/><path d=%22M8 10h16M8 16h11M8 22h7%22 stroke=%22%23c7f277%22 stroke-width=%223%22/></svg>" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="LocalBase 首页">
+        <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span>LocalBase<span class="brand-dot">.</span></span>
+      </a>
+      <div class="topbar-center"><span class="pulse"></span> 数据不离开这台设备</div>
+      <a class="text-link" href="/benchmark.html">性能实验室 <span>↗</span></a>
+    </header>
+
+    <section class="hero">
+      <div>
+        <p class="eyebrow">ON-DEVICE INTELLIGENCE · SEEKDB</p>
+        <h1>知识在本地沉淀，<br /><span>答案随语义抵达。</span></h1>
+      </div>
+      <div class="hero-note">
+        <span class="hero-index">01 / MINI KB</span>
+        <p>文档向量化和查询编码均在浏览器中完成。原文、向量与元数据统一写入 seekdb，由数据库完成全文与向量 RRF 混合检索。</p>
+        <div class="privacy-badge">✓ 无云端推理 API</div>
+      </div>
+    </section>
+
+    <div class="workspace">
+      <aside class="sidebar">
+        <section class="side-section model-section">
+          <div class="section-heading"><span>推理运行时</span><span id="model-state" class="tiny-label">等待加载</span></div>
+          <h2>all-MiniLM-L6-v2</h2>
+          <p class="muted">Xenova ONNX · 384 维 · 余弦相似度</p>
+          <div id="backend-badge" class="backend-badge idle"><span></span> 检测推理后端</div>
+          <div id="download-status" class="download-status" aria-live="polite"></div>
+          <div class="field-row">
+            <label>模型精度
+              <select id="dtype">
+                <option value="auto">自适应量化</option>
+                <option value="q8">INT8 量化</option>
+                <option value="fp16">FP16 量化</option>
+                <option value="fp32">FP32 基线</option>
+              </select>
+            </label>
+            <label>批大小
+              <select id="batch-size">
+                <option value="4">4</option>
+                <option value="8" selected>8</option>
+                <option value="16">16</option>
+                <option value="32">32</option>
+              </select>
+            </label>
+          </div>
+          <button id="load-model" class="button secondary full">加载并预热模型</button>
+        </section>
+
+        <section class="side-section">
+          <div class="section-heading"><span>知识库</span><button id="show-new-collection" class="icon-button" title="新建知识库">＋</button></div>
+          <select id="collection-select" class="collection-select" aria-label="当前知识库"></select>
+          <form id="new-collection-form" class="new-collection" hidden>
+            <input id="new-collection-name" placeholder="例如 research_notes" maxlength="40" required />
+            <div><button type="submit" class="button small">创建</button><button id="cancel-new-collection" type="button" class="button small ghost">取消</button></div>
+          </form>
+          <div class="collection-stats">
+            <div><strong id="chunk-count">0</strong><span>文本分块</span></div>
+            <div><strong id="source-count">0</strong><span>来源文件</span></div>
+          </div>
+          <button id="delete-collection" class="danger-link">删除当前知识库</button>
+        </section>
+
+        <section class="side-section metrics-section">
+          <div class="section-heading"><span>最近查询</span><span class="tiny-label">实测</span></div>
+          <dl class="metrics">
+            <div><dt>查询向量化</dt><dd id="metric-embed">—</dd></div>
+            <div><dt>seekdb 检索</dt><dd id="metric-search">—</dd></div>
+            <div><dt>端到端延迟</dt><dd id="metric-total">—</dd></div>
+            <div><dt>模型加载</dt><dd id="metric-load">—</dd></div>
+          </dl>
+          <button id="export-metrics" class="text-button">导出原始测试记录 ↓</button>
+        </section>
+      </aside>
+
+      <main class="main-content">
+        <section class="panel import-panel">
+          <div class="panel-title">
+            <div><span class="step-number">01</span><div><h2>导入本地语料</h2><p>支持 TXT / Markdown，自动分块、去重与增量写入</p></div></div>
+            <button id="load-sample" class="text-button">载入示例语料</button>
+          </div>
+          <label id="drop-zone" class="drop-zone">
+            <input id="file-input" type="file" accept=".txt,.md,.markdown,.text" multiple hidden />
+            <span class="upload-icon" aria-hidden="true">↥</span>
+            <strong>拖放文档到这里，或点击选择</strong>
+            <span>每个文件不超过 5 MB · 内容仅在本机处理</span>
+          </label>
+          <div id="selected-files" class="selected-files"></div>
+          <div class="import-actions">
+            <div class="progress-wrap">
+              <div class="progress-track"><div id="import-progress" class="progress-bar"></div></div>
+              <span id="import-status" aria-live="polite">等待导入</span>
+            </div>
+            <button id="import-button" class="button primary" disabled>开始向量化 <span>→</span></button>
+          </div>
+        </section>
+
+        <section class="panel search-panel">
+          <div class="panel-title">
+            <div><span class="step-number">02</span><div><h2>提出一个问题</h2><p>全文召回 + 向量召回，由 seekdb 在数据库内融合排序</p></div></div>
+            <span class="fusion-tag">NATIVE RRF</span>
+          </div>
+          <form id="search-form" class="search-box">
+            <input id="query" value="混合检索如何兼顾关键词和语义？" placeholder="输入问题或关键词…" autocomplete="off" />
+            <select id="top-k" aria-label="结果数量"><option value="3">3 条</option><option value="6" selected>6 条</option><option value="10">10 条</option></select>
+            <button id="search-button" class="button primary" type="submit">检索 <span>⌕</span></button>
+          </form>
+          <div id="search-summary" class="search-summary"></div>
+          <div id="results" class="results">
+            <div class="empty-state"><span>⌁</span><p>导入语料后，检索结果会显示在这里</p></div>
+          </div>
+        </section>
+
+        <section class="panel documents-panel">
+          <div class="panel-title">
+            <div><span class="step-number">03</span><div><h2>已入库内容</h2><p>当前知识库中的文本分块与来源元数据</p></div></div>
+            <button id="refresh-documents" class="text-button">刷新列表</button>
+          </div>
+          <div id="documents" class="documents"><p class="muted">暂无内容</p></div>
+        </section>
+      </main>
+    </div>
+
+    <footer><span>LocalBase / StepFun × OceanBase seekdb</span><span>Transformers.js · WebGPU / WASM · FP16 / INT8 / FP32</span></footer>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

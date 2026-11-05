@@ -1,0 +1,29 @@
+{
+  "name": "stepfun-local-knowledge-base",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Browser-local embeddings with seekdb hybrid retrieval",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "concurrently -k -n api,web \"node server/index.js\" \"vite\"",
+    "build": "vite build",
+    "start": "NODE_ENV=production node server/index.js",
+    "model:download": "node scripts/download-model.mjs",
+    "test": "node --test tests/*.test.js",
+    "test:e2e": "node scripts/e2e.mjs",
+    "benchmark": "node scripts/benchmark.mjs"
+  },
+  "dependencies": {
+    "@huggingface/transformers": "3.7.2",
+    "express": "5.1.0",
+    "seekdb": "1.4.0"
+  },
+  "devDependencies": {
+    "concurrently": "9.2.1",
+    "playwright": "1.56.1",
+    "vite": "7.1.9"
+  }
+}

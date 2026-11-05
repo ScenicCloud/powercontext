@@ -1,0 +1,7 @@
+node_modules/
+dist/
+data/seekdb*/
+public/models/
+test-results/
+*.log
+.DS_Store

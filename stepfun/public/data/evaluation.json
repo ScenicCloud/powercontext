@@ -1,0 +1,65 @@
+{
+  "name": "LocalBase fixed retrieval evaluation v1",
+  "k": 5,
+  "documents": [
+    {
+      "source": "webgpu.txt",
+      "text": "WebGPU inference acceleration\nWebGPU exposes the computer's GPU to browser machine learning workloads. ONNX Runtime Web can execute transformer operators on the GPU, reducing embedding latency on supported hardware. Applications should request an adapter and explicitly select the webgpu device. A visible backend indicator helps users verify that acceleration is active."
+    },
+    {
+      "source": "wasm.txt",
+      "text": "WASM portable fallback\nWebAssembly, abbreviated WASM, provides a portable CPU execution backend for browser neural networks. When WebGPU is unavailable or initialization fails, the application can recreate the inference worker with the wasm device. The WASM fallback preserves document embedding and query retrieval without relying on a cloud service."
+    },
+    {
+      "source": "int8.txt",
+      "text": "INT8 model quantization\nINT8 quantization represents neural network weights with compact eight bit integers. Compared with an FP32 checkpoint, the quantized ONNX file is smaller and usually requires less memory. Teams should measure actual file sizes and evaluate retrieval quality because compression does not guarantee identical rankings."
+    },
+    {
+      "source": "fp32.txt",
+      "text": "FP32 baseline precision\nFP32 stores model parameters as thirty two bit floating point values. The unquantized baseline provides a reference for measuring the size, speed, Recall at K, and nDCG changes introduced by INT8 quantization. A fair comparison uses the same model revision, corpus, queries, backend, and seekdb configuration."
+    },
+    {
+      "source": "rrf.txt",
+      "text": "Reciprocal rank fusion\nRRF combines ranked candidate lists according to reciprocal rank positions. It is useful for hybrid retrieval because lexical relevance scores and vector distances have different scales. seekdb performs the fusion inside the database and returns one ordered result list instead of requiring the browser to merge candidates."
+    },
+    {
+      "source": "vector.txt",
+      "text": "Semantic vector retrieval\nAn embedding model maps text into a dense numerical vector. Cosine nearest neighbor search can retrieve semantically related passages even when they use different words from the query. Mean pooling and L2 normalization produce the document and query embeddings used by the MiniLM model."
+    },
+    {
+      "source": "fulltext.txt",
+      "text": "Full text lexical retrieval\nFull text search matches exact words and is especially valuable for function names, product names, identifiers, and rare terminology. A lexical candidate branch complements dense semantic search. Together, full text and vector retrieval improve robustness across keyword queries and natural language questions."
+    },
+    {
+      "source": "hnsw.txt",
+      "text": "HNSW vector index\nHierarchical Navigable Small World, or HNSW, is an approximate nearest neighbor index for dense vectors. It accelerates similarity search by navigating a graph rather than comparing every stored embedding. The collection configuration declares 384 dimensions and cosine distance for the MiniLM vectors."
+    },
+    {
+      "source": "caching.txt",
+      "text": "Model loading and browser caching\nThe first model initialization may include downloading ONNX and tokenizer files. Subsequent loads can reuse browser caches and avoid network transfer. Benchmark reports should separate download, model loading, warmup, first inference, and steady state inference instead of selecting only the fastest run."
+    },
+    {
+      "source": "batching.txt",
+      "text": "Embedding batch processing\nBatching sends several text chunks through one transformer invocation, amortizing worker and tokenizer scheduling overhead. Larger batches may improve throughput but consume more temporary memory. Performance comparisons should hold the batch size constant and report chunks processed per second."
+    },
+    {
+      "source": "refresh.txt",
+      "text": "Incremental import and index refresh\nA content hash and chunk number form a stable document identifier. Existing identifiers are skipped before embedding, which makes repeated imports inexpensive. After new batches are written, refresh_index makes the latest seekdb vector index changes searchable. Refreshing once per import avoids unnecessary per chunk maintenance."
+    },
+    {
+      "source": "privacy.txt",
+      "text": "Local inference and data privacy\nBrowser local inference keeps document embedding computation on the user's device. The application does not call a cloud inference API and does not replay precomputed server vectors. Only text, metadata, and locally generated embeddings are sent to the local seekdb service for persistent storage and database retrieval."
+    }
+  ],
+  "queries": [
+    { "query": "How does the application fall back when GPU acceleration is unavailable?", "relevantSources": ["wasm.txt", "webgpu.txt"] },
+    { "query": "What are the size and quality effects of eight bit quantization?", "relevantSources": ["int8.txt", "fp32.txt"] },
+    { "query": "How are lexical and semantic candidate rankings combined?", "relevantSources": ["rrf.txt", "fulltext.txt"] },
+    { "query": "Which method finds related meaning when different words are used?", "relevantSources": ["vector.txt"] },
+    { "query": "What graph index accelerates approximate nearest neighbor search?", "relevantSources": ["hnsw.txt"] },
+    { "query": "Why should first model loading be measured separately from warm inference?", "relevantSources": ["caching.txt"] },
+    { "query": "How can repeated imports avoid embedding the same chunks again?", "relevantSources": ["refresh.txt"] },
+    { "query": "Does private document encoding require a remote inference API?", "relevantSources": ["privacy.txt"] },
+    { "query": "What is the throughput and memory tradeoff of processing chunks together?", "relevantSources": ["batching.txt"] }
+  ]
+}
