@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# seekdb 本地数据目录（运行时产物，不入库）
+data/seekdb.db/
+*.db/
+seekdb.db/
+
+# 凭据（不提交真实 API Key / 密码）
+.env
+
+# 系统 / 编辑器
+.DS_Store
+.idea/
+.vscode/
+*.log
+
+# Qoder Sites 发布产物与本地站点描述符
+dist/
+*.qoder.site
+
+# 覆盖赛事仓库根 .gitignore 的 `site/` 规则：本目录是演示站源码，必须入库
+!site/
