@@ -1,0 +1,762 @@
+{
+  "context": {
+    "task": "为 TaskService.list_tasks 增加 due_before 过滤：只返回截止日期严格早于给定日期的任务，同时保持 status 与 priority 过滤、默认排序和 limit 行为。非法 due_before 必须抛出 ValueError，并继续通过既有回归测试。",
+    "specs": [
+      {
+        "path": "specs/service_spec.md",
+        "locator": "REQ-BOARD-006",
+        "lines": [
+          22,
+          24
+        ],
+        "score": 63.131,
+        "matched": [
+          "before",
+          "due",
+          "due_before",
+          "list",
+          "list_tasks",
+          "task",
+          "tasks",
+          "严格",
+          "严格早",
+          "于给",
+          "于给定",
+          "任务",
+          "定日",
+          "定日期",
+          "截止",
+          "截止日",
+          "日期",
+          "日期严",
+          "日期的",
+          "早于",
+          "早于给",
+          "期严",
+          "期严格",
+          "期的",
+          "期的任",
+          "格早",
+          "格早于",
+          "止日",
+          "止日期",
+          "的任",
+          "的任务",
+          "给定",
+          "给定日",
+          "过滤"
+        ],
+        "text": "### REQ-BOARD-006 due_before 过滤\n`list_tasks(due_before=...)` 只保留截止日期严格早于给定日期的任务。等于给定日期的任务必须被排除；没有截止日期（`due` 为 `None`）的任务在过滤器启用时也必须被排除。"
+      },
+      {
+        "path": "specs/service_spec.md",
+        "locator": "REQ-BOARD-010",
+        "lines": [
+          34,
+          35
+        ],
+        "score": 49.374,
+        "matched": [
+          "before",
+          "due",
+          "due_before",
+          "limit",
+          "task",
+          "回归",
+          "回归测",
+          "归测",
+          "归测试",
+          "排序",
+          "既有",
+          "有回",
+          "有回归",
+          "测试",
+          "继续",
+          "继续通",
+          "续通",
+          "续通过",
+          "行为",
+          "认排",
+          "认排序",
+          "过滤",
+          "通过",
+          "默认",
+          "默认排"
+        ],
+        "text": "### REQ-BOARD-010 回归要求\n新增 `due_before` 不得改变既有行为：状态过滤、优先级过滤、组合过滤、默认排序、`limit` 截断、`get_task` 以及既有参数校验必须继续通过原有回归测试。"
+      },
+      {
+        "path": "specs/service_spec.md",
+        "locator": "REQ-BOARD-004",
+        "lines": [
+          16,
+          18
+        ],
+        "score": 24.944,
+        "matched": [
+          "list",
+          "list_tasks",
+          "priority",
+          "task",
+          "tasks",
+          "于给",
+          "于给定",
+          "任务",
+          "只返",
+          "只返回",
+          "的任",
+          "的任务",
+          "给定",
+          "过滤",
+          "返回"
+        ],
+        "text": "### REQ-BOARD-004 优先级过滤\n`list_tasks(priority=...)` 只返回 `priority` 等于给定值的任务；合法取值为 1 到 5 的整数。"
+      },
+      {
+        "path": "specs/service_spec.md",
+        "locator": "REQ-BOARD-003",
+        "lines": [
+          13,
+          15
+        ],
+        "score": 24.755,
+        "matched": [
+          "list",
+          "list_tasks",
+          "status",
+          "task",
+          "tasks",
+          "于给",
+          "于给定",
+          "任务",
+          "只返",
+          "只返回",
+          "的任",
+          "的任务",
+          "给定",
+          "过滤",
+          "返回"
+        ],
+        "text": "### REQ-BOARD-003 状态过滤\n`list_tasks(status=...)` 只返回 `status` 等于给定值的任务；`status` 省略或为 `None` 时不过滤。合法取值为 `open` 与 `done`。"
+      },
+      {
+        "path": "specs/service_spec.md",
+        "locator": "REQ-BOARD-005",
+        "lines": [
+          19,
+          21
+        ],
+        "score": 23.836,
+        "matched": [
+          "before",
+          "due",
+          "due_before",
+          "error",
+          "limit",
+          "priority",
+          "status",
+          "value",
+          "valueerror",
+          "任务",
+          "抛出",
+          "返回",
+          "非法"
+        ],
+        "text": "### REQ-BOARD-005 参数校验\n任何非法参数都必须在返回任务之前抛出 `ValueError`：非法 `status`、非法 `priority`、非正整数 `limit`、非法 `due_before`。布尔值不得当作整数使用。"
+      },
+      {
+        "path": "specs/service_spec.md",
+        "locator": "REQ-BOARD-007",
+        "lines": [
+          25,
+          27
+        ],
+        "score": 16.545,
+        "matched": [
+          "before",
+          "due",
+          "due_before",
+          "error",
+          "value",
+          "valueerror",
+          "抛出",
+          "日期"
+        ],
+        "text": "### REQ-BOARD-007 due_before 输入格式\n`due_before` 接受 `datetime.date` 或 `YYYY-MM-DD` 形式的字符串。字符串无法解析、日期越界或类型不符时抛出 `ValueError`，错误信息必须包含 `due_before`。"
+      },
+      {
+        "path": "specs/service_spec.md",
+        "locator": "REQ-BOARD-008",
+        "lines": [
+          28,
+          30
+        ],
+        "score": 15.461,
+        "matched": [
+          "due",
+          "priority",
+          "任务",
+          "同时",
+          "排序",
+          "的任",
+          "的任务"
+        ],
+        "text": "### REQ-BOARD-008 排序规则\n结果按 `priority` 降序排列；同一优先级内按 `due` 升序排列，`due` 为 `None` 的任务排在最后；仍相同时按 `id` 升序排列。"
+      },
+      {
+        "path": "specs/service_spec.md",
+        "locator": "REQ-BOARD-001",
+        "lines": [
+          7,
+          9
+        ],
+        "score": 13.145,
+        "matched": [
+          "list",
+          "list_tasks",
+          "service",
+          "task",
+          "tasks",
+          "taskservice"
+        ],
+        "text": "### REQ-BOARD-001 服务入口\n`TaskService` 提供 `get_task(task_id)` 与 `list_tasks(...)` 两个只读入口，数据来自 `InMemoryTaskRepository`。"
+      },
+      {
+        "path": "specs/api_contract.md",
+        "locator": "错误",
+        "lines": [
+          26,
+          32
+        ],
+        "score": 21.393,
+        "matched": [
+          "before",
+          "due",
+          "due_before",
+          "error",
+          "limit",
+          "priority",
+          "status",
+          "task",
+          "value",
+          "valueerror",
+          "非法"
+        ],
+        "text": "## 错误\n\n| 场景 | 异常 | 消息要求 |\n| --- | --- | --- |\n| 非法 status / priority / limit | `ValueError` | 说明合法取值 |\n| 非法 due_before | `ValueError` | 包含 `due_before` 与 `YYYY-MM-DD` |\n| 未知 task_id | `KeyError` | `args == (task_id,)` |"
+      }
+    ],
+    "decisions": [
+      {
+        "path": "specs/decisions.md",
+        "locator": "ADR-005",
+        "lines": [
+          21,
+          24
+        ],
+        "score": 32.225,
+        "matched": [
+          "before",
+          "due",
+          "due_before",
+          "status",
+          "严格",
+          "严格早",
+          "任务",
+          "截止",
+          "截止日",
+          "日期",
+          "日期的",
+          "早于",
+          "期的",
+          "期的任",
+          "格早",
+          "格早于",
+          "止日",
+          "止日期",
+          "的任",
+          "的任务",
+          "过滤"
+        ],
+        "text": "### ADR-005 due_before 的严格边界语义\nStatus: active\n`due_before` 表示“严格早于”，等于边界日期的任务不计入结果。截止日期缺失的任务在过滤器启用时排除，以免把“无期限”误判为“已到期”。",
+        "status": "active"
+      },
+      {
+        "path": "specs/decisions.md",
+        "locator": "ADR-001",
+        "lines": [
+          5,
+          8
+        ],
+        "score": 15.056,
+        "matched": [
+          "error",
+          "status",
+          "value",
+          "valueerror",
+          "任务",
+          "抛出",
+          "非法"
+        ],
+        "text": "### ADR-001 任务状态词汇\nStatus: active\n任务状态固定为 `open` 与 `done` 两种，其他词汇一律视为非法输入并抛出 `ValueError`。",
+        "status": "active"
+      },
+      {
+        "path": "specs/decisions.md",
+        "locator": "ADR-006",
+        "lines": [
+          25,
+          27
+        ],
+        "score": 12.02,
+        "matched": [
+          "due",
+          "priority",
+          "status",
+          "排序"
+        ],
+        "text": "### ADR-006 优先级优先的排序\nStatus: active\n排序键为 `priority` 降序、`due` 升序（`None` 最后）、`id` 升序。该决策取代 ADR-002。",
+        "status": "active"
+      },
+      {
+        "path": "specs/decisions.md",
+        "locator": "ADR-004",
+        "lines": [
+          17,
+          20
+        ],
+        "score": 10.379,
+        "matched": [
+          "status",
+          "task",
+          "保持",
+          "测试"
+        ],
+        "text": "### ADR-004 演示工程使用内存仓储\nStatus: active\n演示工程使用确定性的内存仓储 `InMemoryTaskRepository`，避免测试依赖外部数据库；业务工程原有的存储方式保持不变。",
+        "status": "active"
+      }
+    ],
+    "excluded_decisions": [
+      {
+        "path": "specs/decisions.md",
+        "locator": "ADR-002",
+        "lines": [
+          9,
+          12
+        ],
+        "status": "superseded by ADR-006",
+        "reason": "inactive decision"
+      },
+      {
+        "path": "specs/decisions.md",
+        "locator": "ADR-003",
+        "lines": [
+          13,
+          16
+        ],
+        "status": "rejected",
+        "reason": "inactive decision"
+      }
+    ],
+    "code": [
+      {
+        "path": "board/service.py",
+        "locator": "TaskService.list_tasks",
+        "lines": [
+          30,
+          49
+        ],
+        "score": 16.674,
+        "matched": [
+          "limit",
+          "list",
+          "list_tasks",
+          "priority",
+          "status",
+          "task",
+          "tasks"
+        ],
+        "text": "def list_tasks(\n        self,\n        *,\n        status: str | None = None,\n        priority: int | None = None,\n        limit: int = DEFAULT_LIMIT,\n    ) -> list[Task]:\n        \"\"\"List tasks after applying the current filters (REQ-BOARD-003/004).\"\"\"\n\n        normalized_status = self._validate_status(status)\n        normalized_priority = self._validate_priority(priority)\n        normalized_limit = self._validate_limit(limit)\n\n        tasks = [\n            task\n            for task in self._repository.all()\n            if self._matches(task, status=normalized_status, priority=normalized_priority)\n        ]\n        tasks.sort(key=self._sort_key)\n        return tasks[:normalized_limit]"
+      },
+      {
+        "path": "board/service.py",
+        "locator": "TaskService._validate_limit",
+        "lines": [
+          80,
+          83
+        ],
+        "score": 10.827,
+        "matched": [
+          "error",
+          "limit",
+          "value",
+          "valueerror"
+        ],
+        "text": "def _validate_limit(limit: int) -> int:\n        if isinstance(limit, bool) or not isinstance(limit, int) or limit < 1:\n            raise ValueError(\"limit must be a positive integer\")\n        return limit"
+      },
+      {
+        "path": "board/service.py",
+        "locator": "TaskService._validate_status",
+        "lines": [
+          64,
+          69
+        ],
+        "score": 10.677,
+        "matched": [
+          "error",
+          "status",
+          "task",
+          "value",
+          "valueerror"
+        ],
+        "text": "def _validate_status(status: str | None) -> str | None:\n        if status is None:\n            return None\n        if status not in TASK_STATUSES:\n            raise ValueError(f\"status must be one of {TASK_STATUSES}, got {status!r}\")\n        return status"
+      },
+      {
+        "path": "board/service.py",
+        "locator": "TaskService._validate_priority",
+        "lines": [
+          72,
+          77
+        ],
+        "score": 10.052,
+        "matched": [
+          "error",
+          "priority",
+          "value",
+          "valueerror"
+        ],
+        "text": "def _validate_priority(priority: int | None) -> int | None:\n        if priority is None:\n            return None\n        if isinstance(priority, bool) or not isinstance(priority, int) or priority not in PRIORITY_VALUES:\n            raise ValueError(f\"priority must be one of {PRIORITY_VALUES}, got {priority!r}\")\n        return priority"
+      },
+      {
+        "path": "board/service.py",
+        "locator": "TaskService._sort_key",
+        "lines": [
+          60,
+          61
+        ],
+        "score": 9.405,
+        "matched": [
+          "due",
+          "priority",
+          "task"
+        ],
+        "text": "def _sort_key(task: Task) -> tuple[int, date, str]:\n        return (-task.priority, task.due or date.max, task.id)"
+      },
+      {
+        "path": "board/service.py",
+        "locator": "TaskService._matches",
+        "lines": [
+          52,
+          57
+        ],
+        "score": 8.601,
+        "matched": [
+          "priority",
+          "status",
+          "task"
+        ],
+        "text": "def _matches(task: Task, *, status: str | None, priority: int | None) -> bool:\n        if status is not None and task.status != status:\n            return False\n        if priority is not None and task.priority != priority:\n            return False\n        return True"
+      }
+    ],
+    "tests": [
+      {
+        "path": "tests/test_due_before.py",
+        "locator": "test_invalid_due_before_raises_value_error",
+        "lines": [
+          49,
+          51
+        ],
+        "score": 19.011,
+        "matched": [
+          "before",
+          "due",
+          "due_before",
+          "error",
+          "list",
+          "list_tasks",
+          "service",
+          "task",
+          "tasks",
+          "taskservice",
+          "value",
+          "valueerror"
+        ],
+        "text": "def test_invalid_due_before_raises_value_error(value: object) -> None:\n    with pytest.raises(ValueError):\n        TaskService().list_tasks(due_before=value)"
+      },
+      {
+        "path": "tests/test_validation.py",
+        "locator": "test_invalid_limit_is_rejected",
+        "lines": [
+          30,
+          32
+        ],
+        "score": 15.992,
+        "matched": [
+          "error",
+          "limit",
+          "list",
+          "list_tasks",
+          "service",
+          "task",
+          "tasks",
+          "taskservice",
+          "value",
+          "valueerror"
+        ],
+        "text": "def test_invalid_limit_is_rejected(limit: object) -> None:\n    with pytest.raises(ValueError):\n        TaskService().list_tasks(limit=limit)"
+      },
+      {
+        "path": "tests/test_validation.py",
+        "locator": "test_invalid_priority_is_rejected",
+        "lines": [
+          24,
+          26
+        ],
+        "score": 15.595,
+        "matched": [
+          "error",
+          "list",
+          "list_tasks",
+          "priority",
+          "service",
+          "task",
+          "tasks",
+          "taskservice",
+          "value",
+          "valueerror"
+        ],
+        "text": "def test_invalid_priority_is_rejected(priority: object) -> None:\n    with pytest.raises(ValueError):\n        TaskService().list_tasks(priority=priority)"
+      },
+      {
+        "path": "tests/test_validation.py",
+        "locator": "test_invalid_status_is_rejected",
+        "lines": [
+          14,
+          20
+        ],
+        "score": 15.194,
+        "matched": [
+          "error",
+          "list",
+          "list_tasks",
+          "service",
+          "status",
+          "task",
+          "tasks",
+          "taskservice",
+          "value",
+          "valueerror"
+        ],
+        "text": "def test_invalid_status_is_rejected(status: str | None) -> None:\n    if status is None:\n        # ``None`` means \"no filter\" and is therefore valid.\n        assert TaskService().list_tasks(status=status)\n        return\n    with pytest.raises(ValueError):\n        TaskService().list_tasks(status=status)"
+      },
+      {
+        "path": "tests/test_due_before.py",
+        "locator": "test_due_before_respects_limit_after_ordering",
+        "lines": [
+          43,
+          45
+        ],
+        "score": 14.832,
+        "matched": [
+          "before",
+          "due",
+          "due_before",
+          "limit",
+          "list",
+          "list_tasks",
+          "service",
+          "task",
+          "tasks",
+          "taskservice"
+        ],
+        "text": "def test_due_before_respects_limit_after_ordering() -> None:\n    tasks = TaskService().list_tasks(due_before=\"2026-11-05\", limit=2)\n    assert [task.id for task in tasks] == [\"TASK-002\", \"TASK-006\"]"
+      },
+      {
+        "path": "tests/test_due_before.py",
+        "locator": "test_due_before_combines_with_status_filter",
+        "lines": [
+          38,
+          40
+        ],
+        "score": 14.345,
+        "matched": [
+          "before",
+          "due",
+          "due_before",
+          "list",
+          "list_tasks",
+          "service",
+          "status",
+          "task",
+          "tasks",
+          "taskservice"
+        ],
+        "text": "def test_due_before_combines_with_status_filter() -> None:\n    tasks = TaskService().list_tasks(status=\"done\", due_before=date(2026, 11, 5))\n    assert [task.id for task in tasks] == [\"TASK-006\", \"TASK-004\"]"
+      },
+      {
+        "path": "tests/test_filters.py",
+        "locator": "test_status_and_priority_filters_combine",
+        "lines": [
+          26,
+          28
+        ],
+        "score": 12.821,
+        "matched": [
+          "list",
+          "list_tasks",
+          "priority",
+          "service",
+          "status",
+          "task",
+          "tasks",
+          "taskservice"
+        ],
+        "text": "def test_status_and_priority_filters_combine() -> None:\n    tasks = TaskService().list_tasks(status=\"done\", priority=3)\n    assert [task.id for task in tasks] == [\"TASK-006\"]"
+      },
+      {
+        "path": "tests/test_due_before.py",
+        "locator": "test_due_before_excludes_the_boundary_date",
+        "lines": [
+          22,
+          24
+        ],
+        "score": 12.64,
+        "matched": [
+          "before",
+          "due",
+          "due_before",
+          "list",
+          "list_tasks",
+          "service",
+          "task",
+          "tasks",
+          "taskservice"
+        ],
+        "text": "def test_due_before_excludes_the_boundary_date() -> None:\n    tasks = TaskService().list_tasks(due_before=date(2026, 11, 5))\n    assert \"TASK-007\" not in [task.id for task in tasks]"
+      }
+    ],
+    "selection_trace": {
+      "task": "为 TaskService.list_tasks 增加 due_before 过滤：只返回截止日期严格早于给定日期的任务，同时保持 status 与 priority 过滤、默认排序和 limit 行为。非法 due_before 必须抛出 ValueError，并继续通过既有回归测试。",
+      "terms": {
+        "english": [
+          "taskservice",
+          "task",
+          "service",
+          "list_tasks",
+          "list",
+          "tasks",
+          "due_before",
+          "due",
+          "before",
+          "status",
+          "priority",
+          "limit",
+          "valueerror",
+          "value",
+          "error"
+        ],
+        "chinese": [
+          "增加",
+          "过滤",
+          "只返",
+          "返回",
+          "回截",
+          "截止",
+          "止日",
+          "日期",
+          "期严",
+          "严格",
+          "格早",
+          "早于",
+          "于给",
+          "给定",
+          "定日",
+          "期的",
+          "的任",
+          "任务",
+          "只返回",
+          "返回截",
+          "回截止",
+          "截止日",
+          "止日期",
+          "日期严",
+          "期严格",
+          "严格早",
+          "格早于",
+          "早于给",
+          "于给定",
+          "给定日",
+          "定日期",
+          "日期的",
+          "期的任",
+          "的任务",
+          "同时",
+          "时保",
+          "保持",
+          "同时保",
+          "时保持",
+          "默认",
+          "认排",
+          "排序",
+          "序和",
+          "默认排",
+          "认排序",
+          "排序和",
+          "行为",
+          "非法",
+          "须抛",
+          "抛出",
+          "必须抛",
+          "须抛出",
+          "并继",
+          "继续",
+          "续通",
+          "通过",
+          "过既",
+          "既有",
+          "有回",
+          "回归",
+          "归测",
+          "测试",
+          "并继续",
+          "继续通",
+          "续通过",
+          "通过既",
+          "过既有",
+          "既有回",
+          "有回归",
+          "回归测",
+          "归测试"
+        ]
+      },
+      "candidate_counts": {
+        "spec": {
+          "fts": 12,
+          "substring": 12,
+          "idf_terms": 86
+        },
+        "decision": {
+          "fts": 6,
+          "substring": 6,
+          "idf_terms": 86
+        },
+        "code": {
+          "fts": 10,
+          "substring": 0,
+          "idf_terms": 86
+        },
+        "test": {
+          "fts": 19,
+          "substring": 0,
+          "idf_terms": 86
+        }
+      },
+      "limits": {
+        "spec": 9,
+        "decision": 4,
+        "code": 6,
+        "test": 8
+      }
+    }
+  },
+  "missing_required": {}
+}

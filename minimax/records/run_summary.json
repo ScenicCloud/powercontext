@@ -1,0 +1,162 @@
+{
+  "generated_at": "2026-11-05T06:35:23.049402+00:00",
+  "ingest_current": {
+    "project": "minimax_demo",
+    "documents": 10,
+    "chunks": 50,
+    "changed": [
+      "board/__init__.py",
+      "board/models.py",
+      "board/repository.py",
+      "board/service.py",
+      "specs/api_contract.md",
+      "specs/decisions.md",
+      "specs/service_spec.md",
+      "tests/test_due_before.py",
+      "tests/test_filters.py",
+      "tests/test_validation.py"
+    ],
+    "unchanged": []
+  },
+  "ingest_before": {
+    "project": "minimax_demo_before",
+    "documents": 10,
+    "chunks": 49,
+    "changed": [
+      "board/__init__.py",
+      "board/models.py",
+      "board/repository.py",
+      "board/service.py",
+      "specs/api_contract.md",
+      "specs/decisions.md",
+      "specs/service_spec.md",
+      "tests/test_due_before.py",
+      "tests/test_filters.py",
+      "tests/test_validation.py"
+    ],
+    "unchanged": []
+  },
+  "context": {
+    "missing_required": {},
+    "specs": [
+      "REQ-BOARD-006",
+      "REQ-BOARD-010",
+      "REQ-BOARD-004",
+      "REQ-BOARD-003",
+      "REQ-BOARD-005",
+      "REQ-BOARD-007",
+      "REQ-BOARD-008",
+      "REQ-BOARD-001",
+      "错误"
+    ],
+    "decisions": [
+      "ADR-005",
+      "ADR-001",
+      "ADR-006",
+      "ADR-004"
+    ],
+    "excluded_decisions": [
+      "ADR-002",
+      "ADR-003"
+    ],
+    "code": [
+      "TaskService.list_tasks",
+      "TaskService._validate_limit",
+      "TaskService._validate_status",
+      "TaskService._validate_priority",
+      "TaskService._sort_key",
+      "TaskService._matches"
+    ],
+    "tests": [
+      "test_invalid_due_before_raises_value_error",
+      "test_invalid_limit_is_rejected",
+      "test_invalid_priority_is_rejected",
+      "test_invalid_status_is_rejected",
+      "test_due_before_respects_limit_after_ordering",
+      "test_due_before_combines_with_status_filter",
+      "test_status_and_priority_filters_combine",
+      "test_due_before_excludes_the_boundary_date"
+    ]
+  },
+  "verification_before": {
+    "phase": "before",
+    "timestamp": "2026-11-05T06:35:23.763652+00:00",
+    "project": "/Users/admin/Desktop/OceanBase/powercontext/minimax/.demo_work/before_project",
+    "target": {
+      "command": "/Users/admin/Desktop/OceanBase/.venv312/bin/python -m pytest tests/test_due_before.py -q --tb=short",
+      "exit_code": 1,
+      "counts": {
+        "passed": 0,
+        "failed": 12,
+        "error": 0
+      },
+      "log": "/Users/admin/Desktop/OceanBase/powercontext/minimax/records/tests_target_before.log"
+    },
+    "regression": {
+      "command": "/Users/admin/Desktop/OceanBase/.venv312/bin/python -m pytest tests/test_filters.py tests/test_validation.py -q --tb=short",
+      "exit_code": 0,
+      "counts": {
+        "passed": 23,
+        "failed": 0,
+        "error": 0
+      },
+      "log": "/Users/admin/Desktop/OceanBase/powercontext/minimax/records/tests_regression_before.log"
+    },
+    "exit_code": 1,
+    "target_ok": false,
+    "regression_ok": true
+  },
+  "verification_after": {
+    "phase": "after",
+    "timestamp": "2026-11-05T06:35:24.085376+00:00",
+    "project": "/Users/admin/Desktop/OceanBase/powercontext/minimax/demo_project",
+    "target": {
+      "command": "/Users/admin/Desktop/OceanBase/.venv312/bin/python -m pytest tests/test_due_before.py -q --tb=short",
+      "exit_code": 0,
+      "counts": {
+        "passed": 12,
+        "failed": 0,
+        "error": 0
+      },
+      "log": "/Users/admin/Desktop/OceanBase/powercontext/minimax/records/tests_target_after.log"
+    },
+    "regression": {
+      "command": "/Users/admin/Desktop/OceanBase/.venv312/bin/python -m pytest tests/test_filters.py tests/test_validation.py -q --tb=short",
+      "exit_code": 0,
+      "counts": {
+        "passed": 23,
+        "failed": 0,
+        "error": 0
+      },
+      "log": "/Users/admin/Desktop/OceanBase/powercontext/minimax/records/tests_regression_after.log"
+    },
+    "exit_code": 0,
+    "target_ok": true,
+    "regression_ok": true
+  },
+  "must_pass": {
+    "target_failed_before": true,
+    "regression_passed_before": true,
+    "target_passed_after": true,
+    "regression_passed_after": true,
+    "state_read_after_restart": true,
+    "minimax_session_recorded": true,
+    "minimax_patch_reproduces_committed_code": true
+  },
+  "spec_evolution_updated": true,
+  "minimax": {
+    "record": "records/minimax_dev_session.json",
+    "recorded": true,
+    "patch_reproduces_committed_code": true
+  },
+  "powercontext_save": {
+    "scope_id": "scp_4hd8qr8tneqqydgp6k6ns401xd",
+    "source_id": "src_97747cea98da4bd98535f127723b807a",
+    "source_position": 2
+  },
+  "state_after_restart": {
+    "exit_code": 0,
+    "stdout": "{\n  \"backend\": \"powercontext\",\n  \"server_url\": \"http://127.0.0.1:59065\",\n  \"scope_id\": \"scp_4hd8qr8tneqqydgp6k6ns401xd\",\n  \"found\": true,\n  \"source_id\": \"src_97747cea98da4bd98535f127723b807a\",\n  \"source_position\": 2,\n  \"state\": {\n    \"completed\": [\n      \"从 seekdb 检索规格、决策、代码与测试来源\",\n      \"MiniMax 根据上下文产出补丁并应用\",\n      \"目标测试转绿，回归测试保持通过\"\n    ],\n    \"completed_text\": \"COMPLETED: 从 seekdb 检索规格、决策、代码与测试来源; COMPLETED: MiniMax 根据上下文产出补丁并应用; COMPLETED: 目标测试转绿，回归测试保持通过\",\n    \"context_digest\": \"4b8509b5d9af5e8827aa6a8e2fa64f09ba30d5112fd28910865c337e64c41974\",\n    \"context_summary\": {\n      \"code\": [],\n      \"decisions\": [],\n      \"specs\": [],\n      \"tests\": []\n    },\n    \"pending\": [],\n    \"pending_text\": \"\",\n    \"task\": \"为 TaskService.list_tasks 增加 due_before 过滤：只返回截止日期严格早于给定日期的任务，同时保持 status 与 pri",
+    "stderr": ""
+  }
+}

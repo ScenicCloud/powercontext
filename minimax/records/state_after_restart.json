@@ -1,0 +1,57 @@
+{
+  "backend": "powercontext",
+  "server_url": "http://127.0.0.1:59065",
+  "scope_id": "scp_4hd8qr8tneqqydgp6k6ns401xd",
+  "found": true,
+  "source_id": "src_97747cea98da4bd98535f127723b807a",
+  "source_position": 2,
+  "state": {
+    "completed": [
+      "从 seekdb 检索规格、决策、代码与测试来源",
+      "MiniMax 根据上下文产出补丁并应用",
+      "目标测试转绿，回归测试保持通过"
+    ],
+    "completed_text": "COMPLETED: 从 seekdb 检索规格、决策、代码与测试来源; COMPLETED: MiniMax 根据上下文产出补丁并应用; COMPLETED: 目标测试转绿，回归测试保持通过",
+    "context_digest": "4b8509b5d9af5e8827aa6a8e2fa64f09ba30d5112fd28910865c337e64c41974",
+    "context_summary": {
+      "code": [],
+      "decisions": [],
+      "specs": [],
+      "tests": []
+    },
+    "pending": [],
+    "pending_text": "",
+    "task": "为 TaskService.list_tasks 增加 due_before 过滤：只返回截止日期严格早于给定日期的任务，同时保持 status 与 priority 过滤、默认排序和 limit 行为。非法 due_before 必须抛出 ValueError，并继续通过既有回归测试。",
+    "task_id": "TASK-BOARD-DUE-BEFORE",
+    "verification": {
+      "exit_code": 0,
+      "phase": "after",
+      "project": "/Users/admin/Desktop/OceanBase/powercontext/minimax/demo_project",
+      "regression": {
+        "command": "/Users/admin/Desktop/OceanBase/.venv312/bin/python -m pytest tests/test_filters.py tests/test_validation.py -q --tb=short",
+        "counts": {
+          "error": 0,
+          "failed": 0,
+          "passed": 23
+        },
+        "exit_code": 0,
+        "log": "/Users/admin/Desktop/OceanBase/powercontext/minimax/records/tests_regression_after.log"
+      },
+      "regression_ok": true,
+      "target": {
+        "command": "/Users/admin/Desktop/OceanBase/.venv312/bin/python -m pytest tests/test_due_before.py -q --tb=short",
+        "counts": {
+          "error": 0,
+          "failed": 0,
+          "passed": 12
+        },
+        "exit_code": 0,
+        "log": "/Users/admin/Desktop/OceanBase/powercontext/minimax/records/tests_target_after.log"
+      },
+      "target_ok": true,
+      "timestamp": "2026-11-05T06:35:24.085376+00:00"
+    },
+    "verification_text": "VERIFIED: target=0 passed, regression=0 passed, exit_code=0"
+  },
+  "memory_hits": []
+}

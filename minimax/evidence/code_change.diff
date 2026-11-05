@@ -1,0 +1,93 @@
+--- a/board/service.py
++++ b/board/service.py
+@@ -1,9 +1,7 @@
+-"""Task board service — snapshot before the SDD task was implemented.
++"""Task board service.
+ 
+-This file is the exact pre-change copy of ``demo_project/board/service.py``.
+-It implements REQ-BOARD-001 through REQ-BOARD-005 and REQ-BOARD-008/009, but
+-it does not accept a ``due_before`` argument yet. The demo restores this file
+-to reproduce the failing target tests.
++The implementation follows the current specification in ``specs/service_spec.md``
++and the public contract in ``specs/api_contract.md``.
+ """
+ 
+ from __future__ import annotations
+@@ -32,28 +30,54 @@
+         *,
+         status: str | None = None,
+         priority: int | None = None,
++        due_before: date | str | None = None,
+         limit: int = DEFAULT_LIMIT,
+     ) -> list[Task]:
+-        """List tasks after applying the current filters (REQ-BOARD-003/004)."""
++        """List tasks after applying the filters of REQ-BOARD-006.
+ 
++        REQ-BOARD-006: ``due_before`` keeps only tasks whose due date is
++        strictly earlier than the supplied date. Tasks without a due date are
++        excluded when the filter is active.
++        REQ-BOARD-007: invalid arguments raise ``ValueError`` before any task
++        is returned.
++        REQ-BOARD-008: results are ordered by priority descending, then due
++        date ascending (tasks without a due date last), then task id ascending.
++        REQ-BOARD-009: ``limit`` is applied after filtering and ordering.
++        """
++
+         normalized_status = self._validate_status(status)
+         normalized_priority = self._validate_priority(priority)
++        normalized_due_before = self._parse_due_before(due_before)
+         normalized_limit = self._validate_limit(limit)
+ 
+         tasks = [
+             task
+             for task in self._repository.all()
+-            if self._matches(task, status=normalized_status, priority=normalized_priority)
++            if self._matches(
++                task,
++                status=normalized_status,
++                priority=normalized_priority,
++                due_before=normalized_due_before,
++            )
+         ]
+         tasks.sort(key=self._sort_key)
+         return tasks[:normalized_limit]
+ 
+     @staticmethod
+-    def _matches(task: Task, *, status: str | None, priority: int | None) -> bool:
++    def _matches(
++        task: Task,
++        *,
++        status: str | None,
++        priority: int | None,
++        due_before: date | None,
++    ) -> bool:
+         if status is not None and task.status != status:
+             return False
+         if priority is not None and task.priority != priority:
+             return False
++        if due_before is not None:
++            if task.due is None or task.due >= due_before:
++                return False
+         return True
+ 
+     @staticmethod
+@@ -77,6 +101,19 @@
+         return priority
+ 
+     @staticmethod
++    def _parse_due_before(due_before: date | str | None) -> date | None:
++        if due_before is None:
++            return None
++        if isinstance(due_before, date):
++            return due_before
++        if isinstance(due_before, str):
++            try:
++                return date.fromisoformat(due_before)
++            except ValueError as error:
++                raise ValueError("due_before must be an ISO date (YYYY-MM-DD)") from error
++        raise ValueError("due_before must be a date or an ISO date string (YYYY-MM-DD)")
++
++    @staticmethod
+     def _validate_limit(limit: int) -> int:
+         if isinstance(limit, bool) or not isinstance(limit, int) or limit < 1:
+             raise ValueError("limit must be a positive integer")

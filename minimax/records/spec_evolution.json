@@ -1,0 +1,280 @@
+{
+  "task": "通知摘要固定包含几条通知，按什么顺序排序？",
+  "steps": [
+    {
+      "version": "v1",
+      "ingest": {
+        "project": "spec_evolution",
+        "documents": 1,
+        "chunks": 2,
+        "changed": [
+          "notification_spec.md"
+        ],
+        "unchanged": []
+      },
+      "context": {
+        "task": "通知摘要固定包含几条通知，按什么顺序排序？",
+        "specs": [
+          {
+            "path": "notification_spec.md",
+            "locator": "REQ-NOTIFY-001",
+            "lines": [
+              3,
+              5
+            ],
+            "score": 11.725,
+            "matched": [
+              "包含",
+              "固定",
+              "固定包",
+              "定包",
+              "定包含",
+              "序排",
+              "摘要",
+              "摘要固",
+              "条通",
+              "条通知",
+              "知摘",
+              "知摘要",
+              "要固",
+              "要固定",
+              "通知",
+              "通知摘"
+            ],
+            "text": "### REQ-NOTIFY-001 摘要条数\n通知摘要固定包含最近 2 条通知，按时间倒序排列。"
+          },
+          {
+            "path": "notification_spec.md",
+            "locator": "REQ-NOTIFY-002",
+            "lines": [
+              6,
+              7
+            ],
+            "score": 2.022,
+            "matched": [
+              "摘要",
+              "通知"
+            ],
+            "text": "### REQ-NOTIFY-002 空列表处理\n没有通知时返回空摘要，并提示“暂无通知”。"
+          }
+        ],
+        "decisions": [],
+        "excluded_decisions": [],
+        "code": [],
+        "tests": [],
+        "selection_trace": {
+          "task": "通知摘要固定包含几条通知，按什么顺序排序？",
+          "terms": {
+            "english": [],
+            "chinese": [
+              "通知",
+              "知摘",
+              "摘要",
+              "要固",
+              "固定",
+              "定包",
+              "包含",
+              "含几",
+              "几条",
+              "条通",
+              "通知摘",
+              "知摘要",
+              "摘要固",
+              "要固定",
+              "固定包",
+              "定包含",
+              "包含几",
+              "含几条",
+              "几条通",
+              "条通知",
+              "按什",
+              "么顺",
+              "顺序",
+              "序排",
+              "排序",
+              "按什么",
+              "什么顺",
+              "么顺序",
+              "顺序排",
+              "序排序"
+            ]
+          },
+          "candidate_counts": {
+            "spec": {
+              "fts": 0,
+              "substring": 2,
+              "idf_terms": 30
+            },
+            "decision": {
+              "fts": 0,
+              "substring": 0,
+              "idf_terms": 30
+            },
+            "code": {
+              "fts": 0,
+              "substring": 0,
+              "idf_terms": 30
+            },
+            "test": {
+              "fts": 0,
+              "substring": 0,
+              "idf_terms": 30
+            }
+          },
+          "limits": {
+            "spec": 9,
+            "decision": 4,
+            "code": 6,
+            "test": 8
+          }
+        }
+      }
+    },
+    {
+      "version": "v2",
+      "ingest": {
+        "project": "spec_evolution",
+        "documents": 1,
+        "chunks": 3,
+        "changed": [
+          "notification_spec.md"
+        ],
+        "unchanged": []
+      },
+      "context": {
+        "task": "通知摘要固定包含几条通知，按什么顺序排序？",
+        "specs": [
+          {
+            "path": "notification_spec.md",
+            "locator": "REQ-NOTIFY-001",
+            "lines": [
+              3,
+              5
+            ],
+            "score": 14.947,
+            "matched": [
+              "包含",
+              "固定",
+              "固定包",
+              "定包",
+              "定包含",
+              "序排",
+              "摘要",
+              "摘要固",
+              "条通",
+              "条通知",
+              "知摘",
+              "知摘要",
+              "要固",
+              "要固定",
+              "通知",
+              "通知摘"
+            ],
+            "text": "### REQ-NOTIFY-001 摘要条数\n通知摘要固定包含最近 3 条通知，按时间倒序排列。"
+          },
+          {
+            "path": "notification_spec.md",
+            "locator": "REQ-NOTIFY-002",
+            "lines": [
+              6,
+              8
+            ],
+            "score": 2.119,
+            "matched": [
+              "摘要",
+              "通知"
+            ],
+            "text": "### REQ-NOTIFY-002 未读优先\n摘要优先展示未读通知，再补充已读通知，总数不超过 3 条。"
+          },
+          {
+            "path": "notification_spec.md",
+            "locator": "REQ-NOTIFY-003",
+            "lines": [
+              9,
+              10
+            ],
+            "score": 2.119,
+            "matched": [
+              "摘要",
+              "通知"
+            ],
+            "text": "### REQ-NOTIFY-003 空列表处理\n没有通知时返回空摘要，并提示“暂无通知”。"
+          }
+        ],
+        "decisions": [],
+        "excluded_decisions": [],
+        "code": [],
+        "tests": [],
+        "selection_trace": {
+          "task": "通知摘要固定包含几条通知，按什么顺序排序？",
+          "terms": {
+            "english": [],
+            "chinese": [
+              "通知",
+              "知摘",
+              "摘要",
+              "要固",
+              "固定",
+              "定包",
+              "包含",
+              "含几",
+              "几条",
+              "条通",
+              "通知摘",
+              "知摘要",
+              "摘要固",
+              "要固定",
+              "固定包",
+              "定包含",
+              "包含几",
+              "含几条",
+              "几条通",
+              "条通知",
+              "按什",
+              "么顺",
+              "顺序",
+              "序排",
+              "排序",
+              "按什么",
+              "什么顺",
+              "么顺序",
+              "顺序排",
+              "序排序"
+            ]
+          },
+          "candidate_counts": {
+            "spec": {
+              "fts": 0,
+              "substring": 3,
+              "idf_terms": 30
+            },
+            "decision": {
+              "fts": 0,
+              "substring": 0,
+              "idf_terms": 30
+            },
+            "code": {
+              "fts": 0,
+              "substring": 0,
+              "idf_terms": 30
+            },
+            "test": {
+              "fts": 0,
+              "substring": 0,
+              "idf_terms": 30
+            }
+          },
+          "limits": {
+            "spec": 9,
+            "decision": 4,
+            "code": 6,
+            "test": 8
+          }
+        }
+      }
+    }
+  ],
+  "v1_contains_2": true,
+  "v2_contains_3": true,
+  "updated_content_used": true
+}

@@ -1,0 +1,28 @@
+{
+  "phase": "before",
+  "timestamp": "2026-11-05T06:35:23.763652+00:00",
+  "project": "/Users/admin/Desktop/OceanBase/powercontext/minimax/.demo_work/before_project",
+  "target": {
+    "command": "/Users/admin/Desktop/OceanBase/.venv312/bin/python -m pytest tests/test_due_before.py -q --tb=short",
+    "exit_code": 1,
+    "counts": {
+      "passed": 0,
+      "failed": 12,
+      "error": 0
+    },
+    "log": "/Users/admin/Desktop/OceanBase/powercontext/minimax/records/tests_target_before.log"
+  },
+  "regression": {
+    "command": "/Users/admin/Desktop/OceanBase/.venv312/bin/python -m pytest tests/test_filters.py tests/test_validation.py -q --tb=short",
+    "exit_code": 0,
+    "counts": {
+      "passed": 23,
+      "failed": 0,
+      "error": 0
+    },
+    "log": "/Users/admin/Desktop/OceanBase/powercontext/minimax/records/tests_regression_before.log"
+  },
+  "exit_code": 1,
+  "target_ok": false,
+  "regression_ok": true
+}

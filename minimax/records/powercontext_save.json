@@ -1,0 +1,20 @@
+{
+  "backend": "powercontext",
+  "server_url": "http://127.0.0.1:59062",
+  "capabilities": "prompts={'memory.extract': PromptCapability(status=<Status3.DISABLED: 'disabled'>, reason=Reason(root=<ReasonEnum.PROVIDER_NOT_CONFIGURED: 'provider_not_configured'>), definition_version='powercontext.prompt.memory.extract.v1', builtin_version='powercontext.memory.extract.v1', builtin_profile=BuiltinProfile(root=<BuiltinProfileEnum.CODING: 'coding'>)), 'memory.rerank': PromptCapability(status=<Sta",
+  "scope_id": "scp_4hd8qr8tneqqydgp6k6ns401xd",
+  "source_id": "src_97747cea98da4bd98535f127723b807a",
+  "source_position": 2,
+  "memories": [
+    {
+      "kind": "progress",
+      "text": "COMPLETED: 从 seekdb 检索规格、决策、代码与测试来源; COMPLETED: MiniMax 根据上下文产出补丁并应用; COMPLETED: 目标测试转绿，回归测试保持通过",
+      "response": "memory=ArtifactReference(family='memory', artifact_id='memory', revision=3) entry=MemoryEntry(citation=MemoryCitation(memory_ref=ArtifactReference(family='memory', artifact_id='memory', revision=3), entry_id='mem_ent_6325cb71a0614994bb263869683ffb13', entry_version_id='mem_ver_34d3473c25c94188aa4c4459af914bb1'), version=1, kind='progress', text='COMPLETED: 从 seekdb 检索规格、决策、代码与测试来源; COMPLETED: MiniMax 根据上下文产出补丁并应用; COMPLETED: 目标测试转绿，回归测试保持通过', state=<MemoryEntryState.ACTIVE: 'active'>, source_refs=[], artifact_refs=[])"
+    },
+    {
+      "kind": "fact",
+      "text": "VERIFIED: target=0 passed, regression=0 passed, exit_code=0",
+      "response": "memory=ArtifactReference(family='memory', artifact_id='memory', revision=3) entry=None"
+    }
+  ]
+}
