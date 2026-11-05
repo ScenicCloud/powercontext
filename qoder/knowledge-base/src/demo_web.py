@@ -60,6 +60,24 @@ def search(q: str = Query(...), mode: str = "hybrid",
     return {"query": q, "mode": mode, "items": items, "total": len(items)}
 
 
+@app.post("/api/memory")
+def remember(payload: dict) -> dict:
+    """Persist one player action so a later Dify turn can recall it."""
+    title = str(payload.get("title", "玩家恶作剧"))
+    content = str(payload.get("content", "")).strip()
+    if not content:
+        raise HTTPException(status_code=400, detail="content is required")
+    note = Note(
+        note_id=str(payload.get("note_id", "")) or None,
+        title=title,
+        content=content,
+        category=str(payload.get("category", "general")),
+        tags=payload.get("tags", ["npc", "player-memory"]),
+    )
+    note_id = get_repo().upsert(note)
+    return {"ok": True, "note_id": note_id, "engine": "seekdb"}
+
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("src.demo_web:app", host="127.0.0.1", port=8000, reload=False)

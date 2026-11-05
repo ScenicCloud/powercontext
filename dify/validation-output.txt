@@ -1,0 +1,3 @@
+DSL YAML OK
+POST /api/memory -> 200, engine=seekdb
+GET /api/search?q=小鱼%20会唱歌的萝卜&mode=hybrid -> 200, hit content=小鱼把宝箱换成了会唱歌的萝卜
