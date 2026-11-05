@@ -1,5 +1,3 @@
-version: 0.1.5
-kind: app
 app:
   name: 恶作剧 NPC：记仇小章鱼
   mode: advanced-chat
@@ -7,41 +5,96 @@ app:
   icon: 🐙
   icon_background: '#E8F5FF'
   use_icon_as_answer_icon: false
+dependencies: []
+kind: app
+version: 0.1.5
 workflow:
   conversation_variables:
-  - variable: player_name
-    label: 玩家名
-    type: string
+  - description: 玩家在 NPC 中使用的名字
+    id: player-name
+    name: player_name
+    selector:
+    - conversation
+    - player_name
     value: 小鱼
-    required: false
+    value_type: string
   environment_variables:
-  - variable: SEEKDB_API_BASE
+  - description: seekdb API 地址
+    id: seekdb-api-base
+    name: SEEKDB_API_BASE
+    selector:
+    - env
+    - SEEKDB_API_BASE
     value: http://127.0.0.1:8000
-    type: string
-    required: true
+    value_type: string
   features:
+    file_upload:
+      allowed_file_extensions: []
+      allowed_file_types:
+      - image
+      - document
+      allowed_file_upload_methods:
+      - remote_url
+      - local_file
+      enabled: false
+      fileUploadConfig:
+        audio_file_size_limit: 50
+        batch_count_limit: 5
+        file_size_limit: 15
+        image_file_size_limit: 10
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 3
     opening_statement: '🐙 欢迎来到潮湿广场！告诉我你的名字，再说一句你想做的事。
 
-      规则很简单：我会记住你的恶作剧，而且下次见面可能会报复。
-
-      '
+      规则很简单：我会记住你的恶作剧，而且下次见面可能会报复。'
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
     suggested_questions:
-    - 我是小鱼，偷偷把你的宝箱换成了会唱歌的萝卜。
+    - 我是小鱼，偷偷把 NPC 的宝箱换成了会唱歌的萝卜。
     - 我给广场上的乌鸦戴上了王冠。
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
   graph:
     nodes:
-    - id: start
-      type: start
-      data:
+    - data:
         title: 玩家输入
         variables:
         - variable: player_input
           type: paragraph
           label: 玩家行动
           required: true
-    - id: memory
-      type: http-request
-      data:
+        desc: ''
+        selected: false
+        type: start
+      id: start
+      position:
+        x: 0
+        y: 120
+      positionAbsolute:
+        x: 0
+        y: 120
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+      height: 100
+    - data:
         title: 从 seekdb 召回恶作剧记忆
         method: get
         url: '{{#env.SEEKDB_API_BASE#}}/api/search'
@@ -54,9 +107,23 @@ workflow:
           value: '5'
         timeout: 10
         response_type: json
-    - id: npc
-      type: llm
-      data:
+        desc: ''
+        selected: false
+        type: http-request
+      id: memory
+      position:
+        x: 320
+        y: 120
+      positionAbsolute:
+        x: 320
+        y: 120
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+      height: 100
+    - data:
         title: 小章鱼主持人
         model:
           provider: openai
@@ -86,14 +153,42 @@ workflow:
             seekdb 检索结果（决定 NPC 是否记得过去）：{{#memory.body#}}
 
             '
-    - id: answer
-      type: answer
-      data:
+        desc: ''
+        selected: false
+        type: llm
+      id: npc
+      position:
+        x: 640
+        y: 120
+      positionAbsolute:
+        x: 640
+        y: 120
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+      height: 100
+    - data:
         title: NPC 回应
         answer: '{{#npc.text#}}'
-    - id: remember
-      type: http-request
-      data:
+        desc: ''
+        selected: false
+        type: answer
+      id: answer
+      position:
+        x: 960
+        y: 120
+      positionAbsolute:
+        x: 960
+        y: 120
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+      height: 100
+    - data:
         title: 记住本轮恶作剧
         method: post
         url: '{{#env.SEEKDB_API_BASE#}}/api/memory'
@@ -105,13 +200,69 @@ workflow:
           data: '{"title":"玩家恶作剧","content":"{{#sys.query#}}","category":"general","tags":["npc","player-memory"]}'
         timeout: 10
         response_type: json
+        desc: ''
+        selected: false
+        type: http-request
+      id: remember
+      position:
+        x: 1280
+        y: 120
+      positionAbsolute:
+        x: 1280
+        y: 120
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+      height: 100
     edges:
-    - source: start
+    - data:
+        isInLoop: false
+        sourceType: start
+        targetType: http-request
+      id: start-source-memory-target
+      source: start
+      sourceHandle: source
       target: memory
-    - source: memory
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: llm
+      id: memory-source-npc-target
+      source: memory
+      sourceHandle: source
       target: npc
-    - source: npc
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: llm
+        targetType: http-request
+      id: npc-source-remember-target
+      source: npc
+      sourceHandle: source
       target: remember
-    - source: remember
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: answer
+      id: remember-source-answer-target
+      source: remember
+      sourceHandle: source
       target: answer
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    viewport:
+      x: 0
+      y: 0
+      zoom: 0.8
   version: 0.1.5
