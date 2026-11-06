@@ -1,3 +1,9 @@
-DSL YAML OK
-POST /api/memory -> 200, engine=seekdb
-GET /api/search?q=小鱼%20会唱歌的萝卜&mode=hybrid -> 200, hit content=小鱼把宝箱换成了会唱歌的萝卜
+python -m compileall qoder/knowledge-base/src -> PASS
+qoder/knowledge-base/scripts/selftest.py -> PASS (9/9 checks)
+DSL YAML parse -> PASS
+Dify 0.1.5 structure -> PASS (5 nodes, 4 edges, all node/edge references valid)
+HTTP node configuration -> PASS (GET /api/search, POST /api/memory, SEEKDB_API_BASE)
+POST /api/memory -> 200, engine=seekdb, note_id=94408e0a0dbe
+GET /api/search?mode=hybrid&top_k=5 -> 200, recalled same note_id and content
+API validation errors -> PASS (blank content/query, invalid mode, invalid top_k return 422)
+Scope: local structural and real seekdb API validation; Dify Cloud UI import was not executed.

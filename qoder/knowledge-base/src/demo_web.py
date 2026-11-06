@@ -9,14 +9,17 @@
     GET /api/health                 健康检查
     GET /api/notes?category=work   笔记列表（可按类别过滤）
     GET /api/search?q=...&mode=hybrid&category=&top_k=5
+    POST /api/memory               写入一条玩家恶作剧记忆
 """
 from __future__ import annotations
 
 import json
 import os
 from pathlib import Path
+from typing import Literal
 
 from fastapi import FastAPI, HTTPException, Query
+from pydantic import BaseModel, Field, field_validator
 
 from .models import Note
 from .repository import NoteRepository
@@ -26,6 +29,27 @@ SAMPLE_FILE = Path(__file__).resolve().parent.parent / "data" / "sample_notes.js
 
 app = FastAPI(title="知库 · seekdb 演示 API", version="1.0.0")
 _repo: NoteRepository | None = None
+
+
+class MemoryPayload(BaseModel):
+    title: str = Field(default="玩家恶作剧", min_length=1, max_length=200)
+    content: str = Field(min_length=1, max_length=10000)
+    category: str = Field(default="general", min_length=1, max_length=50)
+    tags: list[str] = Field(default_factory=lambda: ["npc", "player-memory"], max_length=20)
+    note_id: str | None = Field(default=None, max_length=100)
+
+    @field_validator("title", "content", "category")
+    @classmethod
+    def strip_required_text(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("字段不能为空白")
+        return value
+
+    @field_validator("tags")
+    @classmethod
+    def strip_tags(cls, value: list[str]) -> list[str]:
+        return [tag.strip() for tag in value if tag.strip()]
 
 
 def get_repo() -> NoteRepository:
@@ -54,27 +78,35 @@ def list_notes(category: str | None = Query(default=None), limit: int = 50) -> d
 
 
 @app.get("/api/search")
-def search(q: str = Query(...), mode: str = "hybrid",
-          category: str | None = None, top_k: int = 5) -> dict:
-    items = get_repo().search(q, mode=mode, top_k=top_k, category=category)
+def search(
+    q: str = Query(..., min_length=1, max_length=1000),
+    mode: Literal["hybrid", "vector", "fulltext"] = Query(default="hybrid"),
+    category: str | None = Query(default=None, max_length=50),
+    top_k: int = Query(default=5, ge=1, le=50),
+) -> dict:
+    q = q.strip()
+    if not q:
+        raise HTTPException(status_code=422, detail="q must not be blank")
+    try:
+        items = get_repo().search(q, mode=mode, top_k=top_k, category=category)
+    except Exception as exc:  # noqa: BLE001
+        raise HTTPException(status_code=500, detail=f"记忆检索失败: {exc}") from exc
     return {"query": q, "mode": mode, "items": items, "total": len(items)}
 
 
 @app.post("/api/memory")
-def remember(payload: dict) -> dict:
-    """Persist one player action so a later Dify turn can recall it."""
-    title = str(payload.get("title", "玩家恶作剧"))
-    content = str(payload.get("content", "")).strip()
-    if not content:
-        raise HTTPException(status_code=400, detail="content is required")
+def remember(payload: MemoryPayload) -> dict:
     note = Note(
-        note_id=str(payload.get("note_id", "")) or None,
-        title=title,
-        content=content,
-        category=str(payload.get("category", "general")),
-        tags=payload.get("tags", ["npc", "player-memory"]),
+        note_id=payload.note_id or "",
+        title=payload.title,
+        content=payload.content,
+        category=payload.category,
+        tags=payload.tags,
     )
-    note_id = get_repo().upsert(note)
+    try:
+        note_id = get_repo().upsert(note)
+    except Exception as exc:  # noqa: BLE001
+        raise HTTPException(status_code=500, detail=f"记忆写入失败: {exc}") from exc
     return {"ok": True, "note_id": note_id, "engine": "seekdb"}
 
 
