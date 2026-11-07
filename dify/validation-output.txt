@@ -1,9 +1,12 @@
+Run date: 2026-11-07, branch 2026-competition-ecosystem, commit cd65fd74
+
 python -m compileall qoder/knowledge-base/src -> PASS
 qoder/knowledge-base/scripts/selftest.py -> PASS (9/9 checks)
 DSL YAML parse -> PASS
-Dify 0.1.5 structure -> PASS (5 nodes, 4 edges, all node/edge references valid)
-HTTP node configuration -> PASS (GET /api/search, POST /api/memory, SEEKDB_API_BASE)
-POST /api/memory -> 200, engine=seekdb, note_id=94408e0a0dbe
-GET /api/search?mode=hybrid&top_k=5 -> 200, recalled same note_id and content
-API validation errors -> PASS (blank content/query, invalid mode, invalid top_k return 422)
-Scope: local structural and real seekdb API validation; Dify Cloud UI import was not executed.
+DSL structure -> PASS (5 nodes: start/http-request/llm/http-request/answer; 4 edges; linear flow start->memory->npc->remember->answer)
+HTTP node configuration -> PASS (GET {{#env.SEEKDB_API_BASE#}}/api/search, POST {{#env.SEEKDB_API_BASE#}}/api/memory)
+GET /api/health -> {"status":"healthy","notes":7,"engine":"seekdb"}
+POST /api/memory -> 200, engine=seekdb, note_id=a1b8d3e7f841
+GET /api/search?q=会唱歌的萝卜 贝壳罗盘&mode=hybrid&top_k=5 -> 200, total=5, items[0] is note_id=a1b8d3e7f841 with the exact written content
+API validation errors -> PASS (blank q, invalid mode, top_k=99, blank content all return 422)
+Scope: local structural and real seekdb API validation; Dify UI import was not executed in this environment.
